@@ -50,33 +50,43 @@ export async function markStoppageService(
     const journey: any = await Journey.findByPk(journeyID);
 
     if (!journey) {
-      throw new Error("Journey not found");
+      return { status: 404, body: { message: "Journey not found" } };
     }
     const stoppagesArray = Array.isArray(journey.stoppages)
       ? journey.stoppages
       : [];
+    if (stoppagesArray.includes(stoppageName)) {
+      return {
+        status: 401,
+        body: {
+          message: `Stoppage '${stoppageName}' already exists in this journey's stoppages`,
+        },
+      };
+    }
 
     const bus = await Bus.findByPk(journey.busID as number);
     if (!bus) {
-      throw new Error("Bus not found");
+      return { status: 404, body: { message: "Bus not found" } };
     }
     const route = await Route.findByPk(bus.routeID as number);
     if (!route) {
-      throw new Error("Route not found");
+      return { status: 404, body: { message: "Route not found" } };
     }
     if (!route.stops.includes(stoppageName)) {
-      throw new Error(
-        `Stoppage '${stoppageName}' is not part of this journey stops`
-      );
+      return {
+        status: 401,
+        body: {
+          message: `Stoppage '${stoppageName}' is not part of this journey stops`,
+        },
+      };
     }
 
     const updatedStoppages = [...stoppagesArray, stoppageName];
     await journey.update({
       stoppages: updatedStoppages,
     });
-    return journey;
+    return { status: 200, body: { message: "Stoppage marked successfully" } };
   } catch (error) {
-    console.log(error);
     throw new Error("An error occurred while marking the stoppage");
   }
 }
@@ -104,7 +114,6 @@ export async function getJourneyDetailsById(journeyId: number) {
     });
     return journey;
   } catch (error) {
-    console.log(error);
     throw new Error("An error occurred while fetching journey details");
   }
 }

@@ -46,6 +46,12 @@ export async function loginService(
     if (!passMatch) {
       return { status: 401, body: { message: "Invalid credentials" } };
     }
+    const existingSession = await Session.findOne({
+      where: { adminId: admin.id, isActive: true },
+    });
+    if (existingSession) {
+      return { status: 400, body: { message: "Already logged in" } };
+    }
     const token = jwt.sign(
       { userId: admin.id, role: "admin" },
       process.env.SECRETKEY as string,
@@ -161,9 +167,9 @@ export async function check_otp(
 
 export async function getDriverList(adminID: string): Promise<any[]> {
   try {
-    // const client = createClient()
-    // client.on("err", (err)=> console.log("redis err", err));
-    // await client.connect();
+    // const client= createClient()
+    //   client.on("err", (error)=> console.log("rdis error"));
+    //   await client.connect()
     const driverList = await Driver.findAll({
       where: { adminID },
       attributes: { exclude: ["password"] },

@@ -1,6 +1,7 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model, Optional, Op } from "sequelize";
 import dbConn from "../db_connection";
 import { Admin } from "./admin.model";
+import cron from "node-cron"; 
 
 interface SessionAttributes {
   id: number;
@@ -19,7 +20,7 @@ interface SessionModel
     SessionAttributes {}
 
 export const Session = dbConn.define<SessionModel>(
-  "sessions", 
+  "sessions",
   {
     id: {
       type: DataTypes.INTEGER,
@@ -64,8 +65,35 @@ export const Session = dbConn.define<SessionModel>(
   }
 );
 
+// const markSessionsInactive = async () => {
+//   const fiveMinutesAgo: any = new Date(new Date() - 2 * 60 * 1000);
 
-// dbConn.sync({ alter: true })
+//   const sessionsToUpdate = await Session.findAll({
+//     where: {
+//       isActive: true,
+//       createdAt: {
+//         [Op.lt]: fiveMinutesAgo,
+//       },
+//     },
+//   });
+
+//   if (sessionsToUpdate.length > 0) {
+//     await Session.update(
+//       { isActive: false },
+//       {
+//         where: {
+//           id: sessionsToUpdate.map((session) => session.id),
+//         },
+//       }
+//     );
+//   }
+// };
+
+// Schedule the cron job to run every minute
+// cron.schedule("* * * * *", markSessionsInactive);
+
+// dbConn
+//   .sync({ alter: true })
 //   .then(() => {
 //     console.log("Journeys table synchronized");
 //   })

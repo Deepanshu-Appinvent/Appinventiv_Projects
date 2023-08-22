@@ -19,14 +19,11 @@ export async function signUp(ctx: Context): Promise<any> {
   };
   try {
     const admin = await signUpService(username, password, email, phoneNumber);
-    console.log(admin);
     const link = `postman:/admin/login`;
 
     ctx.body = { message: "Admin signed up successfully", admin, link };
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
-
     ctx.body = { error: "An error occurred while signing up" };
   }
 }
@@ -39,7 +36,6 @@ export async function login(ctx: Context): Promise<any> {
   try {
     const clientIP = ctx.request.ip;
     const admin = await loginService(username, password, clientIP);
-    console.log(admin);
     ctx.status = admin.status;
     ctx.body = admin.body;
   } catch (error) {
@@ -64,7 +60,6 @@ export async function generateOtp(ctx: Context) {
       };
     }
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
     ctx.body = "Unable to Generate OTP due to an error!";
   }
@@ -90,7 +85,6 @@ export async function checkOtp(ctx: Context) {
       };
     }
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
     ctx.body = "Unable to Generate OTP due to an error!";
   }
@@ -102,7 +96,6 @@ export async function driverList(ctx: Context) {
     const driverList = await getDriverList(adminID);
     ctx.body = { message: "Drivers list fetched successfully", driverList };
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
     ctx.body = { error: "An error occurred while fetching drivers list" };
   }
@@ -110,14 +103,11 @@ export async function driverList(ctx: Context) {
 
 export async function logOut(ctx: Context) {
   try {
-
     const adminID = ctx.params;
     const logOut = await logoutService(adminID.adminId);
-    console.log(logOut);
     ctx.status = logOut.status;
     ctx.body = logOut.body;
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
     ctx.body = { error: "An error occurred while logging out" };
   }

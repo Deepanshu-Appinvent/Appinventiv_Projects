@@ -7,16 +7,14 @@ import {
 
 export async function addRoute(ctx: Context): Promise<any> {
   const {
-    adminID,
     routeName,
     startingStation,
     endingStation,
     distance,
     farecalc,
     estimatedDuration,
-    stops
+    stops,
   } = ctx.request.body as {
-    adminID: number;
     routeName: string;
     startingStation: string;
     endingStation: string;
@@ -25,20 +23,18 @@ export async function addRoute(ctx: Context): Promise<any> {
     estimatedDuration: number;
     stops: string[];
   };
+  const adminID = ctx.state.adminId;
   try {
-    const Route = await createroute(
-      {
-        adminID,
-        routeName,
-        startingStation,
-        endingStation,
-        distance,
-        farecalc,
-        estimatedDuration,
-        stops, 
-      },
-      ctx.state.adminId
-    );
+    const Route = await createroute({
+      adminID,
+      routeName,
+      startingStation,
+      endingStation,
+      distance,
+      farecalc,
+      estimatedDuration,
+      stops,
+    });
     ctx.body = { message: "Route added successfully", route: Route };
   } catch (error) {
     ctx.status = 500;
@@ -52,7 +48,6 @@ export async function routeList(ctx: Context) {
     const routeList = await getRouteList(adminID);
     ctx.body = { message: "Routes list fetched successfully", routeList };
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
     ctx.body = { error: "An error occurred while fetching routes list" };
   }
@@ -64,7 +59,6 @@ export async function routeDetails(ctx: Context) {
     const route = await getRouteDetails(Number(routeId));
     ctx.body = { message: "Route details fetched successfully", route };
   } catch (error) {
-    console.log(error);
     ctx.status = 500;
     ctx.body = { error: "An error occurred while fetching route details" };
   }

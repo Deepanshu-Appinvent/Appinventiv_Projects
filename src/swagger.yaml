@@ -3,6 +3,8 @@ info:
   version: "1.0.0"
   title: "Bus Management System"
   description: The Bus Management System is a comprehensive and user-friendly web-based application that facilitates efficient management and monitoring of bus routes, buses, and user interactions. The system is designed to be accessed by two main user roles Admin and Driver
+
+
 tags:
   - name: Admin Authentication
     description: APIs related to admin authentication
@@ -12,6 +14,10 @@ tags:
     description: APIs related to driver Auhentication
   - name: Driver Actions
     description: APIs related to driver actions
+
+
+servers:
+  - url: https://petstore3.swagger.io/api/v3
 
 paths:
   /admin/signup:
@@ -110,6 +116,31 @@ paths:
         201:
           description: "Success"
 
+  /logout/{adminId}:
+    get:
+      tags:
+        - Admin Authentication
+      summary: Admin Logout
+      parameters:
+        - name: adminId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful logout
+          content:
+            application/json:
+              example:
+                message: Admin logout successfully
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                error: An error occurred while fetching drivers list
+
   /admin/addbus:
     post:
       tags:
@@ -147,6 +178,99 @@ paths:
       responses:
         200:
           description: "Success"
+        400:
+          description: "Not Found"
+
+  /admin/assignbus:
+    post:
+      tags:
+        - Admin Actions
+      summary: "Assign a bus to a driver"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              driverId:
+                type: integer
+              busId:
+                type: integer
+      responses:
+        "200":
+          description: "Bus assigned to driver successfully"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              driverName:
+                type: string
+              busName:
+                type: string
+        "404":
+          description: "Driver or bus not found"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "500":
+          description: "An error occurred while assigning bus to driver"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /admin/assignroute:
+    post:
+      tags:
+        - Admin Actions
+      summary: "Assign a bus to a route"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              routeId:
+                type: integer
+              busId:
+                type: integer
+      responses:
+        "200":
+          description: "Bus assigned to route successfully"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              routeName:
+                type: string
+              busName:
+                type: string
+        "404":
+          description: "Route or bus not found"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "500":
+          description: "An error occurred while assigning bus to route"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
   /admin/addroute:
     post:
       tags:
@@ -175,9 +299,27 @@ paths:
                 type: number
               estimatedDuration:
                 type: number
+              stops:
+                type: array
+                items:
+                  type: string
       responses:
         200:
           description: "Success"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              route:
+                type: object
+        500:
+          description: "Internal Server Error"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
 
   /admin/buslist:
     get:

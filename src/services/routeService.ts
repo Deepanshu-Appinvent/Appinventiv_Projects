@@ -2,12 +2,10 @@ import { Route } from "../database/models/routeModel";
 
 export async function createroute(
   routeData: any,
-  adminId: string
 ): Promise<any> {
   try {
     const newRoute = await Route.create({
       ...routeData,
-      adminId,
     });
     return newRoute;
   } catch (error) {

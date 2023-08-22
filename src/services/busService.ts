@@ -2,16 +2,10 @@ import { Bus } from "../database/models/bus.model";
 import { Route } from "../database/models/routeModel";
 import { Driver } from "../database/models/driver.Model";
 
-export async function addBusService(
-  busData: any,
-  adminId: string
-): Promise<any> {
+export async function addBusService(busData: any): Promise<any> {
   try {
-    console.log("error");
     const newBus = await Bus.create({
       ...busData,
-      adminId,
-      driverID: busData.driverId,
     });
     return newBus;
   } catch (error) {
@@ -31,8 +25,6 @@ export async function assignBusToDriver(
     if (!driver || !bus) {
       return false;
     }
-    //await driver.setBus(bus);
-    // await bus.update({ driverId });
     bus.driverID = driverId;
     await bus.save();
     const driverName = driver.driverName;

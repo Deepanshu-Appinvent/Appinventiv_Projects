@@ -5,7 +5,7 @@ import { addBus, assignBus, assignedBusDetails, assignRoute, busList, busDetails
 import { authenticateAdmin } from "../middleware/jwtAdmin";
 const router = new Router();
 
-router.post("/admin/addbus", validateAddBus, addBus);
+router.post("/admin/addbus",authenticateAdmin, validateAddBus, addBus);
 router.post("/admin/assignbus", assignBus);
 router.post("/admin/assignroute", assignRoute);
 router.get("/admin/buslist", authenticateAdmin, busList);
