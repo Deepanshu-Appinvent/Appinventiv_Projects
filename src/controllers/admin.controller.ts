@@ -19,9 +19,8 @@ export async function signUp(ctx: Context): Promise<any> {
   };
   try {
     const admin = await signUpService(username, password, email, phoneNumber);
-    const link = `postman:/admin/login`;
-
-    ctx.body = { message: "Admin signed up successfully", admin, link };
+    ctx.status = admin.status;
+    ctx.body = admin.body;
   } catch (error) {
     ctx.status = 500;
     ctx.body = { error: "An error occurred while signing up" };

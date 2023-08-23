@@ -1,7 +1,7 @@
 import { Context } from "koa";
 import {
   add_driver,
-  driverLogin,
+  driverLogin,logoutService
 } from "../services/driverService";
 
 export async function addDriver(ctx: Context): Promise<any> {
@@ -13,8 +13,8 @@ export async function addDriver(ctx: Context): Promise<any> {
     salary: string;
   };  try {
     const driver = await add_driver(adminID, driverName, password, DL, salary);
-    const link = `postman:/driver/login`;
-    ctx.body = { message: "Driver signed up successfully", driver, link };
+    ctx.status=driver.status;
+    ctx.body= driver.body;
   } catch (error) {
     ctx.status = 500;
     ctx.body = { error: "An error occurred while adding Driver" };
@@ -36,4 +36,14 @@ export async function login(ctx: Context): Promise<any> {
   }
 }
 
-
+export async function logOut(ctx: Context) {
+  try {
+    const driverID = ctx.params;
+    const logOut = await logoutService(driverID.driverId);
+    ctx.status = logOut.status;
+    ctx.body = logOut.body;
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { error: "An error occurred while logging out" };
+  }
+}

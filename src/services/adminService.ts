@@ -16,6 +16,10 @@ export async function signUpService(
   phoneNumber: string
 ): Promise<any> {
   try {
+    const existingAdmin = await Admin.findOne({ where: { email:email },});
+    if (existingAdmin) {
+      return { status: 400, body: { message: "Already Signed up" } };
+    }
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -25,7 +29,10 @@ export async function signUpService(
       email: email,
       phoneNumber,
     });
-    return newAdmin;
+
+    const link = `postman:/admin/login`;
+    return { status: 200, body: { message: "Admin signed up successfully",newAdmin,link }};
+
   } catch (error) {
     throw new Error("Error while creating a new user");
   }
@@ -37,7 +44,6 @@ export async function loginService(
   clientIP: string
 ): Promise<any> {
   try {
-    console.log(clientIP);
     const admin = await Admin.findOne({ where: { username } });
     if (!admin) {
       return { status: 404, body: { message: "Admin not found" } };

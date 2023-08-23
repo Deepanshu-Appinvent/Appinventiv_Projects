@@ -40,3 +40,5 @@ export async function authenticateAdmin(ctx: Context, next: Next) {
     ctx.body = { message: "Invalid token" };
   }
 }
+
+
