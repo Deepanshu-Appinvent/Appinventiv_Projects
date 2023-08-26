@@ -6,6 +6,7 @@ interface AdminAttributes {
   username: string;
   password: string;
   email: string;
+  secret:string
   phoneNumber: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -35,6 +36,10 @@ export const Admin = dbConn.define<AdminModel>(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    secret: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -59,5 +64,12 @@ export const Admin = dbConn.define<AdminModel>(
   }
 );
 
-  
+// dbConn
+// .sync({ alter: true })
+// .then(() => {
+//   console.log("Journeys table synchronized");
+// })
+// .catch((error) => {
+//   console.error("Error synchronizing journeys table:", error);
+// });
 //export default Admin;

@@ -1,54 +1,46 @@
 import { Context } from "koa";
-import {
-  signUpService,
-  loginService,
-  generate_otp,
-  check_otp,
-  getDriverList,
-  logoutService,
+import {adminService
 } from "../services/adminService";
-import { createClient } from 'redis';
 
-
-export async function signUp(ctx: Context): Promise<any> {
-  const { username, password, email, phoneNumber } = ctx.request.body as {
-    username: string;
-    password: string;
-    email: string;
-    phoneNumber: string;
-  };
-  try {
-    const admin = await signUpService(username, password, email, phoneNumber);
+export class adminController {
+  static async signUp(ctx: Context): Promise<any> {
+    const { username, password, email, phoneNumber } = ctx.request.body as {
+      username: string;
+      password: string;
+      email: string;
+      phoneNumber: string;
+    };
+    const admin = await adminService.signUpService(username, password, email, phoneNumber);
     ctx.status = admin.status;
     ctx.body = admin.body;
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { error: "An error occurred while signing up" };
   }
-}
 
-export async function login(ctx: Context): Promise<any> {
-  const { username, password } = ctx.request.body as {
-    username: string;
-    password: string;
-  };
-  try {
+  static async genLogin(ctx: Context): Promise<any> {
+    const { email, choice } = ctx.request.body as {
+      email: string;
+      choice: string;
+    };
+    const gen = await adminService.genloginservice(email, choice);
+    ctx.status = gen.status;
+    ctx.body = gen.body;
+  }
+  static async login(ctx: Context): Promise<any> {
+    const { username, password, otp } = ctx.request.body as {
+      username: string;
+      password: string;
+      otp: string;
+    };
     const clientIP = ctx.request.ip;
-    const admin = await loginService(username, password, clientIP);
+    const admin = await adminService.loginService(username, password, clientIP, otp);
     ctx.status = admin.status;
     ctx.body = admin.body;
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { message: "Error during Admin login" };
   }
-}
 
-export async function generateOtp(ctx: Context) {
-  try {
+  static async generateOtp(ctx: Context) {
     const { email } = ctx.request.body as {
       email: string;
     };
-    const user = await generate_otp(email);
+    const user = await adminService.generate_otp(email);
     if (!user) {
       ctx.body = "Invalid Credentials";
     } else {
@@ -58,20 +50,15 @@ export async function generateOtp(ctx: Context) {
         user: user.email,
       };
     }
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = "Unable to Generate OTP due to an error!";
   }
-}
 
-export async function checkOtp(ctx: Context) {
-  try {
+  static async checkOtp(ctx: Context) {
     const { email, otp, newpassword } = ctx.request.body as {
       email: string;
       otp: string;
       newpassword: string;
     };
-    const user = await check_otp(email, otp, newpassword);
+    const user = await adminService.check_otp(email, otp, newpassword);
 
     if (!user) {
       ctx.body = "Invalid OTP or Email";
@@ -83,31 +70,18 @@ export async function checkOtp(ctx: Context) {
         newpassword,
       };
     }
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = "Unable to Generate OTP due to an error!";
   }
-}
 
-export async function driverList(ctx: Context) {
-  try {
+  static async driverList(ctx: Context) {
     const adminID = ctx.state.adminId;
-    const driverList = await getDriverList(adminID);
+    const driverList = await adminService.getDriverList(adminID);
     ctx.body = { message: "Drivers list fetched successfully", driverList };
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { error: "An error occurred while fetching drivers list" };
   }
-}
 
-export async function logOut(ctx: Context) {
-  try {
+  static async logOut(ctx: Context) {
     const adminID = ctx.params;
-    const logOut = await logoutService(adminID.adminId);
+    const logOut = await adminService.logoutService(adminID.adminId);
     ctx.status = logOut.status;
     ctx.body = logOut.body;
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { error: "An error occurred while logging out" };
   }
 }

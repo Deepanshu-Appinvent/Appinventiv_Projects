@@ -11,6 +11,8 @@ const signUpSchema = Joi.object({
 const loginSchema = Joi.object({
   username: Joi.string().required(),
   password: Joi.string().required(),
+  otp: Joi.string().required(),
+
 });
 
 const generateOtpSchema = Joi.object({

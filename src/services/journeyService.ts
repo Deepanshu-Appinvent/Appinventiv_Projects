@@ -1,12 +1,13 @@
 import { Journey } from "../database/models/journeyModel";
 import { Bus } from "../database/models/bus.model";
 import { Route } from "../database/models/routeModel";
+import AppError from "../middleware/AppError";
 
-export async function startJourneyService(
-  busID: number,
-  direction: "forward" | "backward"
-): Promise<any> {
-  try {
+export class journeyService {
+  static async startJourneyService(
+    busID: number,
+    direction: "forward" | "backward"
+  ): Promise<any> {
     const journey = await Journey.create({
       busID,
       direction,
@@ -14,21 +15,16 @@ export async function startJourneyService(
       stoppages: [],
     });
     return journey;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while starting the journey");
   }
-}
 
-export async function endJourneyService(
-  journeyID: number,
-  direction: "forward" | "backward"
-): Promise<any> {
-  try {
+  static async endJourneyService(
+    journeyID: number,
+    direction: "forward" | "backward"
+  ): Promise<any> {
     const journey = await Journey.findByPk(journeyID);
 
     if (!journey) {
-      throw new Error("Journey not found");
+      throw new AppError("Journey not foun4", 404);
     }
 
     journey.endTime = new Date();
@@ -36,49 +32,40 @@ export async function endJourneyService(
 
     await journey.save();
     return journey;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while marking the journey as complete");
   }
-}
 
-export async function markStoppageService(
-  journeyID: number,
-  stoppageName: string
-): Promise<any> {
-  try {
+  static async markStoppageService(
+    journeyID: number,
+    stoppageName: string
+  ): Promise<any> {
     const journey: any = await Journey.findByPk(journeyID);
 
     if (!journey) {
-      return { status: 404, body: { message: "Journey not found" } };
+      throw new AppError("Journey not found", 404);
     }
     const stoppagesArray = Array.isArray(journey.stoppages)
       ? journey.stoppages
       : [];
     if (stoppagesArray.includes(stoppageName)) {
-      return {
-        status: 401,
-        body: {
-          message: `Stoppage '${stoppageName}' already exists in this journey's stoppages`,
-        },
-      };
+      throw new AppError(
+        `Stoppage '${stoppageName}' already exists in this journey's stoppages`,
+        401
+      );
     }
 
     const bus = await Bus.findByPk(journey.busID as number);
     if (!bus) {
-      return { status: 404, body: { message: "Bus not found" } };
+      throw new AppError("Bus not found", 404);
     }
     const route = await Route.findByPk(bus.routeID as number);
     if (!route) {
-      return { status: 404, body: { message: "Route not found" } };
+      throw new AppError("Route not found", 404);
     }
     if (!route.stops.includes(stoppageName)) {
-      return {
-        status: 401,
-        body: {
-          message: `Stoppage '${stoppageName}' is not part of this journey stops`,
-        },
-      };
+      throw new AppError(
+        `Stoppage '${stoppageName}' is not part of this journey stops`,
+        401
+      );
     }
 
     const updatedStoppages = [...stoppagesArray, stoppageName];
@@ -86,13 +73,9 @@ export async function markStoppageService(
       stoppages: updatedStoppages,
     });
     return { status: 200, body: { message: "Stoppage marked successfully" } };
-  } catch (error) {
-    throw new Error("An error occurred while marking the stoppage");
   }
-}
 
-export async function getJourneyDetailsById(journeyId: number) {
-  try {
+  static async getJourneyDetailsById(journeyId: number) {
     const journey = await Journey.findByPk(journeyId, {
       include: [
         {
@@ -113,7 +96,5 @@ export async function getJourneyDetailsById(journeyId: number) {
       },
     });
     return journey;
-  } catch (error) {
-    throw new Error("An error occurred while fetching journey details");
   }
 }

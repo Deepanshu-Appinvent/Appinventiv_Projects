@@ -1,38 +1,24 @@
 import { Route } from "../database/models/routeModel";
+import AppError from "../middleware/AppError";
 
-export async function createroute(
-  routeData: any,
-): Promise<any> {
-  try {
+export class routeService {
+  static async createroute(routeData: any): Promise<any> {
     const newRoute = await Route.create({
       ...routeData,
     });
     return newRoute;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while adding the route");
   }
-}
 
-export async function getRouteList(adminID: string): Promise<any[]> {
-  try {
+  static async getRouteList(adminID: string): Promise<any[]> {
     const routeList = await Route.findAll({ where: { adminID } });
     return routeList;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while fetching routes list");
   }
-}
 
-export async function getRouteDetails(routeId: number): Promise<any> {
-  try {
+  static async getRouteDetails(routeId: number): Promise<any> {
     const route = await Route.findByPk(routeId);
     if (!route) {
-      throw new Error("Route not found");
+      throw new AppError("Route not found", 404);
     }
     return route;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while fetching route details");
   }
 }

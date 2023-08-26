@@ -1,10 +1,19 @@
 import Router from "koa-router";
-import { addDriver, login ,logOut} from "../controllers/driverController";
-import { validateSignUpDriver, validateLoginDriver } from "../middleware/joi_validation";
+import { driverController } from "../controllers/driverController";
+import {
+  validateSignUpDriver,
+  validateLoginDriver,
+} from "../middleware/joi_validation";
+import { errorHandler } from "../middleware/errorHandler";
 const router = new Router();
+router.use(errorHandler);
 
-router.post("/driver/adddriver", validateSignUpDriver, addDriver);
-router.post("/driver/driverlogin", validateLoginDriver, login);
-router.get("/driver/logout/:driverId", logOut);
+router.post(
+  "/driver/adddriver",
+  validateSignUpDriver,
+  driverController.addDriver
+);
+router.post("/driver/driverlogin", validateLoginDriver, driverController.login);
+router.get("/driver/logout/:driverId", driverController.logOut);
 
 export default router;

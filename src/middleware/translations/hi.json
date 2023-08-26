@@ -1,0 +1,8 @@
+{
+  "driverAlreadySignedUp": "ड्राइवर पहले से ही साइन अप है",
+  "driverNotFound": "ड्राइवर नहीं मिला",
+  "driverAlreadyLoggedIn": "ड्राइवर पहले से ही लॉग इन है",
+  "invalidCredentials": "अमान्य प्रमाणपत्र",
+  "driverLogoutSuccess": "ड्राइवर सफलतापूर्वक लॉग आउट हुआ",
+  "notSignedInOrLoggedOut": "या तो साइन इन नहीं किया गया है या ड्राइवर पहले से ही लॉग आउट है"
+}

@@ -1,24 +1,21 @@
 import { Bus } from "../database/models/bus.model";
 import { Route } from "../database/models/routeModel";
+import AppError from "../middleware/AppError";
 import { Driver } from "../database/models/driver.Model";
+import { stat } from "fs";
 
-export async function addBusService(busData: any): Promise<any> {
-  try {
+export class busService {
+  static async addBusService(busData: any): Promise<any> {
     const newBus = await Bus.create({
       ...busData,
     });
     return newBus;
-  } catch (error) {
-    console.log(error);
-    throw new Error("Error while adding a bus");
   }
-}
 
-export async function assignBusToDriver(
-  driverId: number,
-  busId: number
-): Promise<any> {
-  try {
+  static async assignBusToDriver(
+    driverId: number,
+    busId: number
+  ): Promise<any> {
     const driver = await Driver.findByPk(driverId);
     const bus = await Bus.findByPk(busId);
 
@@ -36,17 +33,9 @@ export async function assignBusToDriver(
       driverName,
       busName,
     };
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while assigning bus to driver");
   }
-}
 
-export async function assignBusToRoute(
-  routeId: number,
-  busId: number
-): Promise<any> {
-  try {
+  static async assignBusToRoute(routeId: number, busId: number): Promise<any> {
     const route = await Route.findByPk(routeId);
     const bus = await Bus.findByPk(busId);
 
@@ -64,24 +53,14 @@ export async function assignBusToRoute(
       routeName,
       busName,
     };
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while assigning bus to route");
   }
-}
 
-export async function getBusList(adminID: string): Promise<any[]> {
-  try {
+  static async getBusList(adminID: string): Promise<any[]> {
     const busList = await Bus.findAll({ where: { adminID } });
     return busList;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while fetching buses list");
   }
-}
 
-export async function getBusDetails(busId: number): Promise<any> {
-  try {
+  static async getBusDetails(busId: number): Promise<any> {
     const bus = await Bus.findByPk(busId, {
       include: [
         { model: Driver, as: "driver", attributes: ["id", "driverName"] },
@@ -92,17 +71,12 @@ export async function getBusDetails(busId: number): Promise<any> {
       },
     });
     if (!bus) {
-      throw new Error("Bus not found");
+      throw new AppError("Bus not found", 404);
     }
     return bus;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while fetching bus details");
   }
-}
 
-export async function getAssignedBusDetails(driverId: number): Promise<any> {
-  try {
+  static async getAssignedBusDetails(driverId: number): Promise<any> {
     const driver = await Driver.findByPk(driverId);
 
     if (!driver) {
@@ -111,8 +85,5 @@ export async function getAssignedBusDetails(driverId: number): Promise<any> {
 
     const bus = await Bus.findOne({ where: { driverID: driver.id } });
     return bus;
-  } catch (error) {
-    console.log(error);
-    throw new Error("An error occurred while fetching assigned bus details");
   }
 }

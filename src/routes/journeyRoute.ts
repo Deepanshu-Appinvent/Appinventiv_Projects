@@ -1,16 +1,13 @@
 import Router from "koa-router";
 import { authenticateAdmin } from "../middleware/jwtAdmin";
 const router = new Router();
-import {
-  startJourney,
-  endJourney,
-  markStoppage,getJourneyDetails
-} from "../controllers/journeyController";
+import { errorHandler } from "../middleware/errorHandler";
+import { journeyController } from "../controllers/journeyController";
+router.use(errorHandler);
 
-router.post("/driver/startJourney", startJourney);
-router.post("/driver/endJourney", endJourney);
-router.post("/driver/markStoppage", markStoppage);
-router.post("/driver/journey", getJourneyDetails);
-
+router.post("/driver/startJourney", journeyController.startJourney);
+router.post("/driver/endJourney", journeyController.endJourney);
+router.post("/driver/markStoppage", journeyController.markStoppage);
+router.post("/driver/journey", journeyController.getJourneyDetails);
 
 export default router;
