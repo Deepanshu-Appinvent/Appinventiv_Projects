@@ -1,6 +1,4 @@
 import { Journey } from "../database/models/journeyModel";
-import { Bus } from "../database/models/bus.model";
-import { Route } from "../database/models/routeModel";
 import AppError from "../middleware/AppError";
 import BaseEntity from "./baseEntity";
 

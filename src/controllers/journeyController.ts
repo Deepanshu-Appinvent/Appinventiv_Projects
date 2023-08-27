@@ -38,11 +38,6 @@ export class journeyController {
   static async getJourneyDetails(ctx: Context) {
     const { journeyId } = ctx.request.body as { journeyId: number };
     const journey = await journeyService.getJourneyDetailsById(journeyId);
-    if (!journey) {
-      ctx.status = 404;
-      ctx.body = { message: "Journey not found" };
-      return;
-    }
     ctx.body = { message: "Journey details fetched successfully", journey };
   }
 }

@@ -9,6 +9,6 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "translations/**/*.json"],
   "exclude": ["node_modules"]
 }

@@ -87,6 +87,9 @@ export class journeyService {
         exclude: ["busID"],
       },
     });
+    if (!journey) {
+      throw new AppError("Journey not found", 404);
+    }
     return journey;
   }
 }

@@ -3,13 +3,12 @@ import fsBackend from "i18next-fs-backend";
 
 i18next.use(fsBackend).init({
   lng: "en",
-  fallbackLng: "en", // Default language
-  preload: ["en", "hi"], // Languages to preload
+  fallbackLng: "en",
+  preload: ["en", "hi"], 
   ns: ["translations"],
   defaultNS: "translations",
   backend: {
-    // Load translations directly based on language code
-    loadPath: "./translations/{{lng}}.json", // Path to your translation files
+    loadPath: "./translations/{{lng}}.json", 
   },
 });
 

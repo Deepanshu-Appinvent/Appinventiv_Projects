@@ -10,7 +10,7 @@ class DriverEntity extends BaseEntity {
   async findDriverByName(driverName: string): Promise<any | null> {
     const driver = await this.findOneWhere({ driverName });
     if (driver) {
-      throw new AppError("driverAlreadySignedUp", 400);
+      throw new AppError('driverAlreadySignedUp', 400);
     }
     return Driver;
   }

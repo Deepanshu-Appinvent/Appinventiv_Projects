@@ -28,7 +28,7 @@ export class adminController {
     ctx.status = gen.status;
     ctx.body = gen.body;
   }
-  
+
   static async login(ctx: Context): Promise<any> {
     const { username, password, otp } = ctx.request.body as {
       username: string;

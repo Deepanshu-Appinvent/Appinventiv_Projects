@@ -5,6 +5,8 @@ import  { driverEntity } from "../entities/driverEntity";
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "redis";
 import bcrypt from "bcrypt";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 export class driverService {
   static async add_driver(
@@ -46,7 +48,7 @@ export class driverService {
     if (!passwordMatch) {
       throw new AppError("Invalid credentials", 401);
     }
-    const token = jwt.sign({ userId: driver.id, role: "driver" }, "dishu", {
+    const token = jwt.sign({ userId: driver.id, role: "driver" }, process.env.SECRETKEY as string, {
       expiresIn: "1h",
     });
     const deviceID = uuidv4();

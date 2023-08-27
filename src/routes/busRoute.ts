@@ -5,12 +5,7 @@ import { errorHandler } from "../middleware/errorHandler";
 import { authenticateAdmin } from "../middleware/jwtAdmin";
 const router = new Router();
 
-router.post(
-  "/admin/addbus",
-  authenticateAdmin,
-  validateAddBus,
-  busController.addBus
-);
+router.post("/admin/addbus",authenticateAdmin,validateAddBus,busController.addBus);
 router.post("/admin/assignbus",errorHandler, busController.assignBus);
 router.post("/admin/assignroute", errorHandler,busController.assignRoute);
 router.get("/admin/buslist", authenticateAdmin,errorHandler, busController.busList);

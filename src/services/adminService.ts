@@ -39,13 +39,9 @@ export class adminService {
     });
     console.log(qrCodeDataURL);
     const base64Data = qrCodeDataURL.split(";base64,").pop();
-
     const filePath = `googleQRCode/qrcode-${username}.png`;
-
     fs.writeFileSync(filePath, base64Data, { encoding: "base64" });
-
     console.log("PNG file generated:", filePath);
-
     const newAdmin = await Admin.create({
       username: username,
       password: hashedPassword,
@@ -53,7 +49,6 @@ export class adminService {
       phoneNumber,
       secret: secret.ascii,
     });
-
     const link = `postman:/admin/login`;
     return {
       status: 200,
@@ -77,7 +72,6 @@ export class adminService {
           pass: process.env.PASSWORD,
         },
       });
-
       const templatePath = "templates/signInMail.html";
       const htmlTemplate: any = await fs.readFileSync(templatePath, "utf-8");
 
@@ -85,7 +79,6 @@ export class adminService {
         "{{OTP_PLACEHOLDER}}",
         otp
       );
-
       const mailOptions = {
         from: process.env.EMAIL,
         to: email,
@@ -101,7 +94,7 @@ export class adminService {
       const client = createClient();
       client.on("error", (err) => console.log("redis Client Error", err));
       await client.connect();
-      const options: SetOptions = { EX: 80 };
+      const options: SetOptions = { EX: 100 };
       client.set(`AdminLogin:${user.id}`, otp.toString(), options);
       return { status: 200, body: { message: "OTP sent on your mail" } };
     }
@@ -213,7 +206,7 @@ export class adminService {
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
-    const options: SetOptions = { EX: 30 };
+    const options: SetOptions = { EX: 100 };
     client.set(user.email, otp.toString(), options);
     return user;
   }

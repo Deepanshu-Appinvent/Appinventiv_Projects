@@ -8,11 +8,7 @@ import { errorHandler } from "../middleware/errorHandler";
 const router = new Router();
 router.use(errorHandler);
 
-router.post(
-  "/driver/adddriver",
-  validateSignUpDriver,
-  driverController.addDriver
-);
+router.post("/driver/adddriver",validateSignUpDriver,driverController.addDriver);
 router.post("/driver/driverlogin", validateLoginDriver, driverController.login);
 router.get("/driver/logout/:driverId", driverController.logOut);
 
