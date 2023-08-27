@@ -1,24 +1,19 @@
-import { Route } from "../database/models/routeModel";
-import AppError from "../middleware/AppError";
+import routeEntity from "../entities/routeEntity";
 
 export class routeService {
   static async createroute(routeData: any): Promise<any> {
-    const newRoute = await Route.create({
-      ...routeData,
-    });
+    await routeEntity.findRouteByName(routeData.routeName);
+    const newRoute = await routeEntity.createNewRoute(routeData);
     return newRoute;
   }
 
   static async getRouteList(adminID: string): Promise<any[]> {
-    const routeList = await Route.findAll({ where: { adminID } });
+    const routeList = await routeEntity.getRoutesByAdmin(adminID);
     return routeList;
   }
 
   static async getRouteDetails(routeId: number): Promise<any> {
-    const route = await Route.findByPk(routeId);
-    if (!route) {
-      throw new AppError("Route not found", 404);
-    }
+    const route = await routeEntity.findRouteById(routeId);
     return route;
   }
 }

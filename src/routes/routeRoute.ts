@@ -5,19 +5,9 @@ import { errorHandler } from "../middleware/errorHandler";
 
 import { authenticateAdmin } from "../middleware/jwtAdmin";
 const router = new Router();
-router.use(errorHandler);
 
-router.post(
-  "/admin/addroute",
-  authenticateAdmin,
-  validateAddRoute,
-  routeController.addRoute
-);
-router.get("/admin/routelist", authenticateAdmin, routeController.routeList);
-router.get(
-  "/admin/routes/:routeId",
-  authenticateAdmin,
-  routeController.routeDetails
-);
+router.post("/admin/addroute",authenticateAdmin,validateAddRoute,errorHandler,routeController.addRoute);
+router.get("/admin/routelist",authenticateAdmin,errorHandler,routeController.routeList);
+router.get("/admin/routes/:routeId",authenticateAdmin,errorHandler,routeController.routeDetails);
 
 export default router;

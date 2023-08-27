@@ -1,6 +1,7 @@
 import { Driver } from "../database/models/driver.Model";
 import jwt from "jsonwebtoken";
 import AppError from "../middleware/AppError";
+import  { driverEntity } from "../entities/driverEntity";
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "redis";
 import bcrypt from "bcrypt";
@@ -13,12 +14,7 @@ export class driverService {
     DL: string,
     salary: string
   ): Promise<any> {
-    const existingDriver = await Driver.findOne({
-      where: { driverName: driverName },
-    });
-    if (existingDriver) {
-      throw new AppError("driverAlreadySignedUp", 400);
-    }
+     await driverEntity.findDriverByName( driverName );
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -41,11 +37,8 @@ export class driverService {
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
+    const driver= await driverEntity.driverLogin( driverName );
 
-    const driver = await Driver.findOne({ where: { driverName } });
-    if (!driver) {
-      throw new AppError("driver not found", 404);
-    }
     if (await client.exists(`driver:${driver.id}`)) {
       throw new AppError("Driver already logged in", 400);
     }

@@ -81,7 +81,7 @@ export class busController {
   static async busList(ctx: Context) {
     const adminID = ctx.state.adminId;
     const busList = await busService.getBusList(adminID);
-    ctx.body = { message: "Buses lisrred while fetching buses list" };
+    ctx.body = { message: "Buses list while fetching buses list" ,busList};
   }
 
   static async busDetails(ctx: Context) {

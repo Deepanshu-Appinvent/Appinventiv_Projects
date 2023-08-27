@@ -1,6 +1,5 @@
 import { Context } from "koa";
-import {adminService
-} from "../services/adminService";
+import { adminService } from "../services/adminService";
 
 export class adminController {
   static async signUp(ctx: Context): Promise<any> {
@@ -10,7 +9,12 @@ export class adminController {
       email: string;
       phoneNumber: string;
     };
-    const admin = await adminService.signUpService(username, password, email, phoneNumber);
+    const admin = await adminService.signUpService(
+      username,
+      password,
+      email,
+      phoneNumber
+    );
     ctx.status = admin.status;
     ctx.body = admin.body;
   }
@@ -24,6 +28,7 @@ export class adminController {
     ctx.status = gen.status;
     ctx.body = gen.body;
   }
+  
   static async login(ctx: Context): Promise<any> {
     const { username, password, otp } = ctx.request.body as {
       username: string;
@@ -31,7 +36,12 @@ export class adminController {
       otp: string;
     };
     const clientIP = ctx.request.ip;
-    const admin = await adminService.loginService(username, password, clientIP, otp);
+    const admin = await adminService.loginService(
+      username,
+      password,
+      clientIP,
+      otp
+    );
     ctx.status = admin.status;
     ctx.body = admin.body;
   }

@@ -1,15 +1,12 @@
 import { Bus } from "../database/models/bus.model";
 import { Route } from "../database/models/routeModel";
 import AppError from "../middleware/AppError";
+import busEntity from "../entities/busEntity";
 import { Driver } from "../database/models/driver.Model";
-import { stat } from "fs";
 
 export class busService {
   static async addBusService(busData: any): Promise<any> {
-    const newBus = await Bus.create({
-      ...busData,
-    });
-    return newBus;
+    return busEntity.addBusService(busData);
   }
 
   static async assignBusToDriver(
@@ -56,8 +53,7 @@ export class busService {
   }
 
   static async getBusList(adminID: string): Promise<any[]> {
-    const busList = await Bus.findAll({ where: { adminID } });
-    return busList;
+    return busEntity.getBusList(adminID);
   }
 
   static async getBusDetails(busId: number): Promise<any> {
@@ -77,13 +73,6 @@ export class busService {
   }
 
   static async getAssignedBusDetails(driverId: number): Promise<any> {
-    const driver = await Driver.findByPk(driverId);
-
-    if (!driver) {
-      return null;
-    }
-
-    const bus = await Bus.findOne({ where: { driverID: driver.id } });
-    return bus;
+    return busEntity.getAssignedBusDetails(driverId);
   }
 }

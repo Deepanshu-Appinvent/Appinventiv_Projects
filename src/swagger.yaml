@@ -4,6 +4,8 @@ info:
   title: "Bus Management System"
   description: The Bus Management System is a comprehensive and user-friendly web-based application that facilitates efficient management and monitoring of bus routes, buses, and user interactions. The system is designed to be accessed by two main user roles Admin and Driver
 
+servers:
+  - url: http://localhost:3000
 
 tags:
   - name: Admin Authentication
@@ -14,10 +16,6 @@ tags:
     description: APIs related to driver Auhentication
   - name: Driver Actions
     description: APIs related to driver actions
-
-
-servers:
-  - url: https://petstore3.swagger.io/api/v3
 
 paths:
   /admin/signup:
@@ -47,6 +45,54 @@ paths:
       responses:
         200:
           description: Admin signed up successfully
+
+  /choice:
+    post:
+      summary: Generate Login OTP or Authenticator Request
+      tags:
+        - Admin Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              choice:
+                type: string
+
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              example:
+                status: 200
+                body:
+                  message: OTP sent on your mail
+        "401":
+          description: Invalid choice or other authentication issues
+          content:
+            application/json:
+              example:
+                status: 401
+                body:
+                  error: Please make a choice
+        "404":
+          description: User not found
+          content:
+            application/json:
+              example:
+                status: 404
+                body:
+                  error: User not found
+
   /admin/login:
     post:
       summary: Admin login
@@ -67,9 +113,35 @@ paths:
                 type: string
               password:
                 type: string
+              otp:
+                type: string
+
       responses:
-        200:
-          description: Admin logged in successfully
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              example:
+                status: 200
+                body:
+                  message: Login successful
+        "400":
+          description: Bad request or authentication failure
+          content:
+            application/json:
+              example:
+                status: 400
+                body:
+                  error: Authentication failed
+        "401":
+          description: Unauthorized - Already logged in
+          content:
+            application/json:
+              example:
+                status: 401
+                body:
+                  error: Already logged in
+
   /admin/generateOtp:
     post:
       summary: Generate OTP for password reset
@@ -178,8 +250,6 @@ paths:
       responses:
         200:
           description: "Success"
-        400:
-          description: "Not Found"
 
   /admin/assignbus:
     post:
@@ -445,6 +515,46 @@ paths:
       responses:
         200:
           description: Driver logged in successfully
+
+  /driver/logout/{driverId}:
+    get:
+      summary: Log out a driver
+      tags:
+        - Driver Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Driver logged out successfully
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+              body:
+                type: object
+                properties:
+                  message:
+                    type: string
+        401:
+          description: Not signed in or already logged out
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+              body:
+                type: object
+                properties:
+                  error:
+                    type: string
 
   /driver/driverbus/{driverId}:
     get:

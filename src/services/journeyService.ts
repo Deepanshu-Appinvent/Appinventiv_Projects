@@ -1,6 +1,8 @@
 import { Journey } from "../database/models/journeyModel";
 import { Bus } from "../database/models/bus.model";
 import { Route } from "../database/models/routeModel";
+import { journeyEntity } from "../entities/journryEntity";
+
 import AppError from "../middleware/AppError";
 
 export class journeyService {
@@ -8,7 +10,7 @@ export class journeyService {
     busID: number,
     direction: "forward" | "backward"
   ): Promise<any> {
-    const journey = await Journey.create({
+    const journey = await journeyEntity.createJourney({
       busID,
       direction,
       startTime: new Date(),
@@ -21,12 +23,7 @@ export class journeyService {
     journeyID: number,
     direction: "forward" | "backward"
   ): Promise<any> {
-    const journey = await Journey.findByPk(journeyID);
-
-    if (!journey) {
-      throw new AppError("Journey not foun4", 404);
-    }
-
+    const journey = await journeyEntity.findJourneyById(journeyID);
     journey.endTime = new Date();
     journey.direction = direction;
 
@@ -38,11 +35,7 @@ export class journeyService {
     journeyID: number,
     stoppageName: string
   ): Promise<any> {
-    const journey: any = await Journey.findByPk(journeyID);
-
-    if (!journey) {
-      throw new AppError("Journey not found", 404);
-    }
+    const journey = await journeyEntity.findJourneyById(journeyID);
     const stoppagesArray = Array.isArray(journey.stoppages)
       ? journey.stoppages
       : [];
@@ -52,7 +45,6 @@ export class journeyService {
         401
       );
     }
-
     const bus = await Bus.findByPk(journey.busID as number);
     if (!bus) {
       throw new AppError("Bus not found", 404);

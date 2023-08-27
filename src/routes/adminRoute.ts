@@ -11,7 +11,7 @@ router.post("/choice", adminController.genLogin);
 router.post("/admin/login", validateLogin, adminController.login);
 router.post("/admin/generateOtp",validateGenerateOtp,adminController.generateOtp);
 router.post("/admin/checkOtp", validateCheckOtp, adminController.checkOtp);
-router.get("/admin/driverlist", authenticateAdmin, adminController.driverList);
+router.get("/admin/driverlist", authenticateAdmin,errorHandler, adminController.driverList);
 router.get("/logout/:adminId", adminController.logOut);
 
 export default router;
