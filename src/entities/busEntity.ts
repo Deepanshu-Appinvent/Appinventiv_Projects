@@ -14,6 +14,14 @@ class BusEntity extends BaseEntity {
     return newBus;
   }
 
+async findBusById(busId:number): Promise<any | null> {
+  const bus = await this.findOneWhere({ busId });
+  if (!bus) {
+    throw new AppError("Bus not found", 404);
+  }
+  return bus;
+}
+
   async assignBusToDriver(driverId: number, busId: number): Promise<any> {
     const driver = await Driver.findByPk(driverId);
     const bus = await Bus.findByPk(busId);

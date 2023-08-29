@@ -126,7 +126,7 @@ export class adminService {
 
     const redisKey: string = `AdminLogin:${admin.id}`;
     const cachedData = await client.get(`${redisKey}`);
-    if (verified || cachedData) {
+    if (verified || cachedData==otp) {
       const passMatch = await bcrypt.compare(password, admin.password);
       if (!passMatch) {
         throw new AppError("Invalid credentials", 400);
@@ -163,7 +163,7 @@ export class adminService {
       });
 
       return { status: 200, body: { message: "Login successful", token } };
-    } else throw new AppError("Authenication failed", 400);
+    } else throw new AppError("Authentication failed", 400);
   }
 
   static async generate_otp(email: string): Promise<any> {

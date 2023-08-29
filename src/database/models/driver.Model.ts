@@ -8,6 +8,7 @@ interface DriverAttributes {
   adminID: number | null;
   driverName: string;
   password: string;
+  email:string;
   DL: string;
   salary: string;
   createdAt?: Date;
@@ -46,6 +47,10 @@ export const Driver = dbConn.define<DriverModel>(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     DL: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -74,3 +79,11 @@ export const Driver = dbConn.define<DriverModel>(
 //Driver.belongsTo(Route, { foreignKey: "routeID", as: "route" });
 
 //export default Driver;
+// dbConn.sync({ alter: true })
+//   .then(() => {
+//     console.log("Journeys table synchronized");
+//   })
+//   .catch((error) => {
+//     console.error("Error synchronizing journeys table:", error);
+//   });
+//export default route;

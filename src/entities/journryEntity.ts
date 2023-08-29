@@ -16,6 +16,9 @@ class JourneyEntity extends BaseEntity {
     if (!journey) {
       throw new AppError("Journey not found", 404);
     }
+      if (journey.endTime) {
+      throw new AppError("Journey has already ended", 400);
+    }
     return journey;
   }
 

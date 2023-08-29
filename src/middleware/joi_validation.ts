@@ -49,6 +49,7 @@ const signUpDriver = Joi.object({
   adminID: Joi.number().integer().required(),
   driverName: Joi.string().required(),
   password: Joi.string().required(),
+  email: Joi.string().email().required(),
   DL: Joi.string().required(),
   salary: Joi.string().required(),
 });

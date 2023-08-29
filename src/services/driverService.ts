@@ -13,6 +13,7 @@ export class driverService {
     adminID: number,
     driverName: string,
     password: string,
+    email:string,
     DL: string,
     salary: string
   ): Promise<any> {
@@ -24,6 +25,7 @@ export class driverService {
       adminID: adminID,
       driverName: driverName,
       password: hashedPassword,
+      email:email,
       DL: DL,
       salary: salary,
     });

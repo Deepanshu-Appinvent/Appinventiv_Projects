@@ -3,10 +3,11 @@ import { driverService } from "../services/driverService";
 
 export class driverController {
   static async addDriver(ctx: Context): Promise<any> {
-    const { adminID, driverName, password, DL, salary } = ctx.request.body as {
+    const { adminID, driverName, password,email, DL, salary } = ctx.request.body as {
       adminID: number;
       driverName: string;
       password: string;
+      email:string
       DL: string;
       salary: string;
     };
@@ -14,6 +15,7 @@ export class driverController {
       adminID,
       driverName,
       password,
+      email,
       DL,
       salary
     );
