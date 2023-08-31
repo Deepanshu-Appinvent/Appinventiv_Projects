@@ -21,9 +21,11 @@
     "@types/nodemailer": "^6.4.9",
     "@types/pdfkit": "^0.12.10",
     "@types/qrcode": "^1.5.1",
+    "@types/redis": "^4.0.11",
     "@types/speakeasy": "^2.0.7",
     "@types/typescript": "^2.0.0",
     "@types/uuid": "^9.0.2",
+    "@types/winston": "^2.4.4",
     "amqplib": "^0.10.3",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
@@ -61,6 +63,7 @@
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.1",
     "uuid": "^9.0.0",
+    "winston": "^3.10.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

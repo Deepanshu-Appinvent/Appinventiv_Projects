@@ -1,6 +1,7 @@
 import { Bus } from "../database/models/bus.model";
 import { Driver } from "../database/models/driver.Model";
 import { Route } from "../database/models/routeModel";
+import logger from "../logger/logger";
 import AppError from "../middleware/AppError";
 import BaseEntity from "./baseEntity";
 
@@ -14,18 +15,20 @@ class BusEntity extends BaseEntity {
     return newBus;
   }
 
-async findBusById(busId:number): Promise<any | null> {
-  const bus = await this.findOneWhere({ busId });
-  if (!bus) {
-    throw new AppError("Bus not found", 404);
+  async findBusById(busId: number): Promise<any | null> {
+    const bus = await this.findOneWhere({ busId });
+    if (!bus) {
+      logger.error("Bus not found");
+      throw new AppError("Bus not found", 404);
+    }
+    return bus;
   }
-  return bus;
-}
 
   async assignBusToDriver(driverId: number, busId: number): Promise<any> {
     const driver = await Driver.findByPk(driverId);
     const bus = await Bus.findByPk(busId);
     if (!driver || !bus) {
+      logger.error("Driver or bus not found");
       throw new AppError("Driver or bus not found", 404);
     }
     await this.updateEntity(busId, { driverID: driverId });
@@ -45,6 +48,7 @@ async findBusById(busId:number): Promise<any | null> {
   async getAssignedBusDetails(driverId: number): Promise<any> {
     const driver = await Driver.findByPk(driverId);
     if (!driver) {
+      logger.error("Driver not found");
       throw new AppError("Driver not found", 404);
     }
     const bus = await this.findOneWhere({ driverID: driver.id });

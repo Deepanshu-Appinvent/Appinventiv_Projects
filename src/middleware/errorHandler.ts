@@ -4,6 +4,8 @@ import i18n from './i18n';
 
 export async function errorHandler(ctx: Context, next: Next) {
   try {
+    const languageCode = 'hi'; 
+i18n.changeLanguage(languageCode);
     await next();
   } catch (error) {
     console.error('Error:', error);

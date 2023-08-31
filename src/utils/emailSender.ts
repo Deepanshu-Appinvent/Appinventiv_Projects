@@ -13,14 +13,21 @@ const transporter = nodemailer.createTransport({
       pass: process.env.PASSWORD,
     },
   });
-export async function sendOTPByEmail(email: string, otp: string) {
+export async function sendOTPByEmail(email: string, otp: string,subject:string,templatePath:string) {
   try {
+    const htmlTemplate: any = await fs.readFileSync(templatePath, "utf-8");
+
+    const updatedHtmlTemplate = htmlTemplate.replace(
+      "{{OTP_PLACEHOLDER}}",
+      otp
+    );
     const info = await transporter.sendMail({
+      from: process.env.EMAIL,
       to: email,
-      subject: "Your OTP for Login",
-      text: `Your OTP is: ${otp}`,
+      subject:subject,
+      html: updatedHtmlTemplate,
     });
-    console.log("Message sent: %s", info.messageId);
+    console.log("Email sent: " + info.response);
   } catch (error) {
     console.error("Error sending email:", error);
     throw error;

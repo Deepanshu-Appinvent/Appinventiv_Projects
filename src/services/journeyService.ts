@@ -1,5 +1,6 @@
 import { Journey } from "../database/models/journeyModel";
 import { Bus } from "../database/models/bus.model";
+import logger from "../logger/logger";
 import { Route } from "../database/models/routeModel";
 import { journeyEntity } from "../entities/journryEntity";
 import AppError from "../middleware/AppError";
@@ -22,6 +23,7 @@ export class journeyService {
     journeyID: number,
     direction: "forward" | "backward"
   ): Promise<any> {
+    logger.info('Ending a journey...'); 
     const journey = await journeyEntity.findJourneyById(journeyID);
     journey.endTime = new Date();
     journey.direction = direction;

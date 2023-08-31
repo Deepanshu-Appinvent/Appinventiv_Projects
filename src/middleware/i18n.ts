@@ -8,7 +8,7 @@ i18next.use(fsBackend).init({
   ns: ["translations"],
   defaultNS: "translations",
   backend: {
-    loadPath: "./translations/{{lng}}.json", 
+    loadPath: "./translations/en.json", 
   },
 });
 

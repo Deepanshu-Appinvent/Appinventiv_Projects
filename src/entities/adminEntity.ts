@@ -1,5 +1,6 @@
 import { Admin } from "../database/models/admin.model";
 import BaseEntity from "./baseEntity";
+import logger from "../logger/logger";
 import AppError from "../middleware/AppError";
 
 class AdminEntity extends BaseEntity {
@@ -10,6 +11,7 @@ class AdminEntity extends BaseEntity {
   async findAdminByEmail(email: string): Promise<any | null> {
     const admin = await this.findOneWhere({ email });
     if (admin) {
+      logger.error("Admin Already SignedUp");
       throw new AppError("Admin Already SignedUp", 400);
     }
     return admin;
@@ -18,6 +20,7 @@ class AdminEntity extends BaseEntity {
   async findAdminByName(username: string): Promise<any | null> {
     const admin = await this.findOneWhere({ username });
     if (admin) {
+      logger.error("Admin Already SignedUp");
       throw new AppError("Admin Already SignedUp", 400);
     }
     return admin;
@@ -26,6 +29,7 @@ class AdminEntity extends BaseEntity {
   async findAdminByEmail2(email: string): Promise<any> {
     const admin = await this.findOneWhere({ email });
     if (!admin) {
+      logger.error("Admin not found");
       throw new AppError("Admin not found", 404);
     }
     return admin;
@@ -34,6 +38,7 @@ class AdminEntity extends BaseEntity {
   async AdminLogin(username: string): Promise<any> {
     const admin = await this.findOneWhere({ username });
     if (!admin) {
+      logger.error("Admin not found");
       throw new AppError("Admin not found", 404);
     }
     return admin;
@@ -42,6 +47,7 @@ class AdminEntity extends BaseEntity {
   async findAdminById(adminId: number): Promise<any | null> {
     const admin = await this.findByPk(adminId);
     if (!admin) {
+      logger.error("Admin not found");
       throw new AppError("Admin not found", 404);
     }
     return admin;

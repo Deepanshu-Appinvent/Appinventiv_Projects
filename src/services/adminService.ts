@@ -6,13 +6,13 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 import AppError from "../middleware/AppError";
 import { adminEntity } from "../entities/adminEntity";
-import nodemailer from "nodemailer";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import * as dotenv from "dotenv";
 dotenv.config();
 import bcrypt from "bcrypt";
 import { createClient, SetOptions } from "redis";
+import { sendOTPByEmail } from "../utils/emailSender";
 
 export class adminService {
   static async signUpService(
@@ -60,37 +60,12 @@ export class adminService {
     console.log(choice);
     const user = await adminEntity.findAdminByEmail2(email);
     if (choice === "mail") {
-      const otp = Math.floor(100000 + Math.random() * 900000);
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
       console.log(otp);
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASSWORD,
-        },
-      });
-      const templatePath = "templates/signInMail.html";
-      const htmlTemplate: any = await fs.readFileSync(templatePath, "utf-8");
 
-      const updatedHtmlTemplate = htmlTemplate.replace(
-        "{{OTP_PLACEHOLDER}}",
-        otp
-      );
-      const mailOptions = {
-        from: process.env.EMAIL,
-        to: email,
-        subject: "SignIn Request",
-        html: updatedHtmlTemplate,
-      };
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
+      const templatePath = "templates/signInMail.html";
+      await sendOTPByEmail(email, otp, "SignIn Request", templatePath);
+
       const client = createClient();
       client.on("error", (err) => console.log("redis Client Error", err));
       await client.connect();
@@ -126,7 +101,7 @@ export class adminService {
 
     const redisKey: string = `AdminLogin:${admin.id}`;
     const cachedData = await client.get(`${redisKey}`);
-    if (verified || cachedData==otp) {
+    if (verified || cachedData == otp) {
       const passMatch = await bcrypt.compare(password, admin.password);
       if (!passMatch) {
         throw new AppError("Invalid credentials", 400);
@@ -169,45 +144,17 @@ export class adminService {
   static async generate_otp(email: string): Promise<any> {
     const user = await adminEntity.findAdminByEmail2(email);
 
-    const otp = Math.floor(100000 + Math.random() * 900000);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(otp);
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
-    const templatePath = "templates/passwordResetTemplate.html";
-    const htmlTemplate: any = await fs.readFileSync(templatePath, "utf-8");
-
-    const updatedHtmlTemplate = htmlTemplate.replace(
-      "{{OTP_PLACEHOLDER}}",
-      otp
-    );
-
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: email,
-      subject: "Password Reset Request",
-      html: updatedHtmlTemplate,
-    };
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
     const options: SetOptions = { EX: 100 };
     client.set(user.email, otp.toString(), options);
+
+    const templatePath = "templates/passwordResetTemplate.html";
+    await sendOTPByEmail(email, otp, "Password Reset Request", templatePath);
     return user;
   }
 

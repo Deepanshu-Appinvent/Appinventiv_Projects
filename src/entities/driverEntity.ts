@@ -1,5 +1,6 @@
 import { Driver } from "../database/models/driver.Model";
 import BaseEntity from "./baseEntity";
+import logger from "../logger/logger";
 import AppError from "../middleware/AppError";
 
 class DriverEntity extends BaseEntity {
@@ -10,7 +11,8 @@ class DriverEntity extends BaseEntity {
   async findDriverByName(driverName: string): Promise<any | null> {
     const driver = await this.findOneWhere({ driverName });
     if (driver) {
-      throw new AppError('driverAlreadySignedUp', 400);
+      logger.error("Driver Already SignedUp");
+      throw new AppError("driverAlreadySignedUp", 400);
     }
     return Driver;
   }
@@ -18,6 +20,7 @@ class DriverEntity extends BaseEntity {
   async driverLogin(driverName: string): Promise<any> {
     const driver = await this.findOneWhere({ driverName });
     if (!driver) {
+      logger.error("Driver not found");
       throw new AppError("Driver not found", 404);
     }
     return driver;
@@ -26,6 +29,7 @@ class DriverEntity extends BaseEntity {
   async findDriverById(driverId: number): Promise<any | null> {
     const driver = await this.findByPk(driverId);
     if (!driver) {
+      logger.error("Driver not found");
       throw new AppError("Driver not found", 404);
     }
     return driver;

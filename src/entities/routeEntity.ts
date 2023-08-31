@@ -1,7 +1,7 @@
 import { Route } from "../database/models/routeModel";
 import BaseEntity from "./baseEntity";
+import logger from "../logger/logger";
 import AppError from "../middleware/AppError";
-
 class RouteEntity extends BaseEntity {
   constructor() {
     super(Route);
@@ -10,6 +10,7 @@ class RouteEntity extends BaseEntity {
   async findRouteByName(routeName: string): Promise<any | null> {
     const route = await this.findOneWhere({ routeName });
     if (route) {
+      logger.error("Route Already Exist");
       throw new AppError("Route Already Exist", 400);
     }
     return route;
@@ -18,6 +19,7 @@ class RouteEntity extends BaseEntity {
   async findRouteById(routeId: number): Promise<any | null> {
     const route = await this.findByPk(routeId);
     if (!route) {
+      logger.error("Route not found");
       throw new AppError("Route not found", 404);
     }
     return route;
