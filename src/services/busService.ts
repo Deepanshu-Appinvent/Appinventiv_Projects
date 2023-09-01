@@ -28,7 +28,6 @@ export class busService {
     const driverName = driver.driverName;
     const busName = bus.busName;
 
-
     const connection = await amqp.connect("amqp://localhost");
     const channel = await connection.createChannel();
 
@@ -40,10 +39,10 @@ export class busService {
       driverName,
       busId,
       busName,
-      email:driver.email,
-      capacity:bus.capacity,
-      busModel:bus.model,
-      plate:bus.registrationNumber
+      email: driver.email,
+      capacity: bus.capacity,
+      busModel: bus.model,
+      plate: bus.registrationNumber,
     };
 
     channel.sendToQueue(queueName, Buffer.from(JSON.stringify(assignData)), {
@@ -52,8 +51,6 @@ export class busService {
 
     await channel.close();
     await connection.close();
-
- 
 
     return {
       success: true,
@@ -107,5 +104,13 @@ export class busService {
 
   static async getAssignedBusDetails(driverId: number): Promise<any> {
     return busEntity.getAssignedBusDetails(driverId);
+  }
+  static async delBus(busId: number): Promise<any> {
+    const bus = await busEntity.findBusById(busId);
+    await busEntity.removeBus(bus);
+    return {
+      status: 200,
+      body: { message: `Bus ${bus.busName} removed successfully` },
+    };
   }
 }

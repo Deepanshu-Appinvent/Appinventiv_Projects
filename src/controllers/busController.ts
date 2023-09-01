@@ -103,4 +103,10 @@ export class busController {
       bus,
     };
   }
+  static async delBusController(ctx: Context): Promise<any> {
+    const busId = ctx.params.busId;
+    const driver = await busService.delBus(busId);
+    ctx.status = driver.status;
+    ctx.body = driver.body;
+  }
 }

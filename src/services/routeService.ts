@@ -16,4 +16,12 @@ export class routeService {
     const route = await routeEntity.findRouteById(routeId);
     return route;
   }
+  static async delRoute(routeId: number): Promise<any> {
+    const route = await routeEntity.findRouteById(routeId);
+    await routeEntity.removeRoute(route);
+    return {
+      status: 200,
+      body: { message: `Route ${route.routeName} removed successfully` },
+    };
+  }
 }

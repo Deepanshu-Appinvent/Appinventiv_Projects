@@ -45,4 +45,10 @@ export class routeController {
     const route = await routeService.getRouteDetails(Number(routeId));
     ctx.body = { message: "Route details fetched successfully", route };
   }
+  static async delRouteController(ctx: Context): Promise<any> {
+    const routeId = ctx.params.journeyID;
+    const journey = await routeService.delRoute(routeId);
+    ctx.status = journey.status;
+    ctx.body = journey.body;
+  }
 }

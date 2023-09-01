@@ -33,6 +33,11 @@ class JourneyEntity extends BaseEntity {
     }
     await this.updateEntity(journeyId, updates);
   }
+  async removeJourney(journeyId: number) {
+    await this.destroy(journeyId);
+    return journeyId;
+  }
+  
 }
 
 export const journeyEntity = new JourneyEntity();

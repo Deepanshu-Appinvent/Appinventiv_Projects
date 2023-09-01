@@ -32,6 +32,10 @@ class RouteEntity extends BaseEntity {
     const routeList = await this.findAllWhere({ adminID });
     return routeList;
   }
+  async removeRoute(routeId: number) {
+    await this.destroy(routeId);
+    return routeId;
+  }
 }
 
 export const routeEntity = new RouteEntity();

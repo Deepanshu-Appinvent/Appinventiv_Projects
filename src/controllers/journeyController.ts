@@ -40,4 +40,11 @@ export class journeyController {
     const journey = await journeyService.getJourneyDetailsById(journeyId);
     ctx.body = { message: "Journey details fetched successfully", journey };
   }
+
+  static async delJourneyController(ctx: Context): Promise<any> {
+    const journeyID = ctx.params.journeyID;
+    const journey = await journeyService.delJourney(journeyID);
+    ctx.status = journey.status;
+    ctx.body = journey.body;
+  }
 }

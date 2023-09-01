@@ -10,6 +10,7 @@ router.use(errorHandler);
 
 router.post("/driver/adddriver",validateSignUpDriver,driverController.addDriver);
 router.post("/driver/driverlogin", validateLoginDriver, driverController.login);
+router.delete("/driver/delete", driverController.delDriverController);
 router.get("/driver/logout/:driverId", driverController.logOut);
 
 export default router;

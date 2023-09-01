@@ -1,3 +1,57 @@
+import { Context } from "koa";
+import { calculateDistance, fetchWeather } from "../services/googleService";
+
+export async function getDistance(ctx: Context) {
+  const { city1, city2 } = ctx.request.body as {
+    city1: string;
+    city2: string;
+  };
+  const distanceData = await calculateDistance(city1, city2);
+  ctx.body = distanceData;
+}
+
+export async function getWeather(ctx: Context) {
+  const { city } = ctx.request.body as {
+    city: string;
+  };
+
+  try {
+    const weatherData = await fetchWeather(city);
+    ctx.body = weatherData;
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { error: "Failed to fetch weather data" };
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // import { Context } from "koa";
 // import axios from "axios";
 // import { Route } from "../database/models/routeModel";

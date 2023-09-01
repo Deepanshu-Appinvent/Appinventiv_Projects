@@ -26,6 +26,9 @@ export default class BaseEntity {
   async updateEntity(id: number, updates: any): Promise<void> {
     await this.modelName.update(updates, { where: { id } });
   }
-
+  async destroy(dataToDelete:any):Promise<any | null> {
+  const entity= await dataToDelete.destroy();
+      return entity;
+  }
 
 }

@@ -165,7 +165,7 @@ paths:
           description: OTP generated successfully
 
   /admin/checkOtp:
-    post:
+    patch:
       tags:
         - Admin Authentication
       summary: "Check OTP for admin"
@@ -296,6 +296,107 @@ paths:
               error:
                 type: string
 
+  /distance:
+    post:
+      tags:
+        - Additional API
+      summary: Distance and duration b/w 2 cities
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              city1:
+                type: string
+              city2:
+                type: string
+      responses:
+        "200":
+          description: "Data fetched successfully"
+          schema:
+            type: object
+            properties:
+              city1:
+                type: string
+              city2:
+                type: string
+        "504":
+          description: "AxiosError: Request failed"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /bus/delete/{busId}:
+    delete:
+      summary: Delete a bus by ID
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: path
+          name: busId
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Bus deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating the deletion success
+        "404":
+          description: Bus not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating that the Journey was not found
+
+  /get-weather:
+    post:
+      summary: Get weather data by city
+      tags:
+        - Additional API
+      parameters:
+        - name: city
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              city:
+                type: string
+      responses:
+        200:
+          description: Weather data fetched successfully
+          schema:
+            type: object
+            properties:
+              weather:
+                type: string
+        500:
+          description: Failed to fetch weather data
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
   /admin/assignroute:
     post:
       tags:
@@ -415,6 +516,37 @@ paths:
       responses:
         200:
           description: List of routes fetched successfully
+
+  /journey/delete/{journeyID}:
+    delete:
+      summary: Delete a journey by ID
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: path
+          name: journeyID
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Journey deleted successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "404":
+          description: Journey not found
+          chema:
+            type: object
+            properties:
+              message:
+                type: string
+
   /admin/driverlist:
     get:
       summary: Get list of drivers
@@ -461,6 +593,72 @@ paths:
       responses:
         200:
           description: Route details fetched successfully
+
+  /route/delete/{routeId}:
+    delete:
+      summary: Delete a Route by ID
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: path
+          name: routeId
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Route deleted successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "404":
+          description: Route not found
+          chema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /driver/delete:
+    delete:
+      summary: Delete a driver by Name
+      tags:
+        - Admin Actions
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: "body"
+          name: driverName
+          required: true
+          schema:
+            type: object
+            properties:
+              driverName:
+                type: string
+      responses:
+        "200":
+          description: Driver deleted successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "404":
+          description: Driver not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
 
   /driver/adddriver:
     post:

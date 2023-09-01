@@ -9,5 +9,7 @@ const router = new Router();
 router.post("/admin/addroute",authenticateAdmin,validateAddRoute,errorHandler,routeController.addRoute);
 router.get("/admin/routelist",authenticateAdmin,errorHandler,routeController.routeList);
 router.get("/admin/routes/:routeId",authenticateAdmin,errorHandler,routeController.routeDetails);
+router.delete("/route/delete/:routeId", routeController.delRouteController);
+
 
 export default router;

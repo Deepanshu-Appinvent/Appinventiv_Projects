@@ -33,6 +33,14 @@ export class driverController {
     ctx.body = driver.body;
   }
 
+  static async delDriverController(ctx: Context): Promise<any> {
+    const { driverName } = ctx.request.body as {
+      driverName: string;
+    };
+    const driver = await driverService.delDriver(driverName);
+    ctx.status = driver.status;
+    ctx.body = driver.body;
+  }
   static async logOut(ctx: Context) {
     const driverID = ctx.params;
     const logOut = await driverService.logoutService(driverID.driverId);

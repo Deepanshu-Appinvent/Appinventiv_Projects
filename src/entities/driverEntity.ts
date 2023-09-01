@@ -17,7 +17,7 @@ class DriverEntity extends BaseEntity {
     return Driver;
   }
 
-  async driverLogin(driverName: string): Promise<any> {
+  async findDriverByName2(driverName: string): Promise<any> {
     const driver = await this.findOneWhere({ driverName });
     if (!driver) {
       logger.error("Driver not found");
@@ -41,6 +41,11 @@ class DriverEntity extends BaseEntity {
   async getDriversByAdmin(adminID: string): Promise<any[]> {
     const driverList = await this.findAllWhere({ adminID });
     return driverList;
+  }
+
+  async removeDriver(driverName: string) {
+    await this.destroy(driverName);
+    return driverName;
   }
 }
 

@@ -42,7 +42,7 @@ export class adminService {
     const filePath = `googleQRCode/qrcode-${username}.png`;
     fs.writeFileSync(filePath, base64Data, { encoding: "base64" });
     console.log("PNG file generated:", filePath);
-    const newAdmin = await Admin.create({
+    const newAdmin = await adminEntity.createNewAdmin({
       username: username,
       password: hashedPassword,
       email: email,

@@ -3,11 +3,10 @@ import bodyParser from "koa-bodyparser";
 import {koaSwagger} from 'koa2-swagger-ui';
 import YAML from "yamljs";
 import path from "path";
-import fs from 'fs';
 import dbConn from "./database/db_connection";
 import adminRoute from "./routes/adminRoute";
 import driverRoute from "./routes/driverRoute";
-// import googleRoute from "./routes/googleModel"
+import googleRoute from "./routes/googleModel"
 import busRoute from "./routes/busRoute"
 import journeyRoute from "./routes/journeyRoute"
 import routeRoute from "./routes/routeRoute"
@@ -42,8 +41,8 @@ app.use(journeyRoute.allowedMethods());
 app.use(routeRoute.routes());
 app.use(routeRoute.allowedMethods());
 
-// app.use(googleRoute.routes());
-// app.use(googleRoute.allowedMethods());
+app.use(googleRoute.routes());
+app.use(googleRoute.allowedMethods());
 
 dbConn
   .authenticate()

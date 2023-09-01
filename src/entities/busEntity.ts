@@ -54,6 +54,10 @@ class BusEntity extends BaseEntity {
     const bus = await this.findOneWhere({ driverID: driver.id });
     return bus;
   }
+  async removeBus(busId: number) {
+    await this.destroy(busId);
+    return busId;
+  }
 }
 export const busEntity = new BusEntity();
 export default busEntity;

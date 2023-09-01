@@ -1,9 +1,10 @@
-// // routes/routeRoutes.ts
-// import Router from "koa-router";
-// import { createRoute } from '../controllers/googleController';
+import Router from 'koa-router';
+import { getDistance,getWeather } from '../controllers/googleController';
 
-// const router = new Router();
+const router = new Router();
 
-// router.post('/calculate-route', createRoute);
+router.post('/distance', getDistance);
+router.post('/get-weather', getWeather);
 
-// export default router;
+
+export default router;

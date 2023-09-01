@@ -8,6 +8,7 @@ router.use(errorHandler);
 router.post("/driver/startJourney", journeyController.startJourney);
 router.post("/driver/endJourney", journeyController.endJourney);
 router.post("/driver/markStoppage", journeyController.markStoppage);
+router.delete("/journey/delete/:journeyID", journeyController.delJourneyController);
 router.post("/driver/journey", journeyController.getJourneyDetails);
 
 export default router;

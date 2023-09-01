@@ -9,6 +9,7 @@ router.post("/admin/addbus",authenticateAdmin,validateAddBus,busController.addBu
 router.post("/admin/assignbus",errorHandler, busController.assignBus);
 router.post("/admin/assignroute", errorHandler,busController.assignRoute);
 router.get("/admin/buslist", authenticateAdmin,errorHandler, busController.busList);
+router.delete("/bus/delete/:busId", busController.delBusController);
 router.get("/admin/buses/:busId", authenticateAdmin, errorHandler,busController.busDetails);
 router.get("/driver/driverbus/:driverId", errorHandler,busController.assignedBusDetails);
 

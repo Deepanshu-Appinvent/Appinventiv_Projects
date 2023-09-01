@@ -23,7 +23,7 @@ export class journeyService {
     journeyID: number,
     direction: "forward" | "backward"
   ): Promise<any> {
-    logger.info('Ending a journey...'); 
+    logger.info("Ending a journey...");
     const journey = await journeyEntity.findJourneyById(journeyID);
     journey.endTime = new Date();
     journey.direction = direction;
@@ -91,5 +91,14 @@ export class journeyService {
       throw new AppError("Journey not found", 404);
     }
     return journey;
+  }
+
+  static async delJourney(journeyId: number): Promise<any> {
+    const journey = await journeyEntity.findJourneyById(journeyId);
+    await journeyEntity.removeJourney(journey);
+    return {
+      status: 200,
+      body: { message: `Journey ${journeyId} removed successfully` },
+    };
   }
 }

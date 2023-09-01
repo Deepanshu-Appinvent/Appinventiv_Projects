@@ -1,7 +1,7 @@
 import { Driver } from "../database/models/driver.Model";
 import jwt from "jsonwebtoken";
 import AppError from "../middleware/AppError";
-import  { driverEntity } from "../entities/driverEntity";
+import DriverEntity, { driverEntity } from "../entities/driverEntity";
 import { v4 as uuidv4 } from "uuid";
 import { createClient } from "redis";
 import bcrypt from "bcrypt";
@@ -13,19 +13,19 @@ export class driverService {
     adminID: number,
     driverName: string,
     password: string,
-    email:string,
+    email: string,
     DL: string,
     salary: string
   ): Promise<any> {
-     await driverEntity.findDriverByName( driverName );
+    await driverEntity.findDriverByName(driverName);
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const newDriver = await Driver.create({
+    const newDriver = await driverEntity.createNewDriver({
       adminID: adminID,
       driverName: driverName,
       password: hashedPassword,
-      email:email,
+      email: email,
       DL: DL,
       salary: salary,
     });
@@ -41,7 +41,7 @@ export class driverService {
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
-    const driver= await driverEntity.driverLogin( driverName );
+    const driver = await driverEntity.findDriverByName2(driverName);
 
     if (await client.exists(`driver:${driver.id}`)) {
       throw new AppError("Driver already logged in", 400);
@@ -50,9 +50,13 @@ export class driverService {
     if (!passwordMatch) {
       throw new AppError("Invalid credentials", 401);
     }
-    const token = jwt.sign({ userId: driver.id, role: "driver" }, process.env.SECRETKEY as string, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { userId: driver.id, role: "driver" },
+      process.env.SECRETKEY as string,
+      {
+        expiresIn: "1h",
+      }
+    );
     const deviceID = uuidv4();
     let payload: any = {
       driverId: driver.id,
@@ -63,6 +67,15 @@ export class driverService {
     const redisKey = `driver:${payload.driverId}`;
     client.set(redisKey, JSON.stringify(payload));
     return { status: 200, body: { message: "Driver Login successful", token } };
+  }
+
+  static async delDriver(driverName: string): Promise<any> {
+    const driver = await driverEntity.findDriverByName2(driverName);
+    await driverEntity.removeDriver(driver);
+    return {
+      status: 200,
+      body: { message: `Driver ${driverName} removed successfully` },
+    };
   }
 
   static async logoutService(driverId: string): Promise<any> {
