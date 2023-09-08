@@ -3,7 +3,9 @@ import fs from "fs";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
+export class EmailSender {
+
+static transporter = nodemailer.createTransport({
     service: process.env.MAILER_SERVICE,
     host: process.env.MAILER_HOST,
     port: 465,
@@ -13,7 +15,7 @@ const transporter = nodemailer.createTransport({
       pass: process.env.PASSWORD,
     },
   });
-export async function sendOTPByEmail(email: string, otp: string,subject:string,templatePath:string) {
+static async sendOTPByEmail(email: string, otp: string,subject:string,templatePath:string) {
   try {
     const htmlTemplate: any = await fs.readFileSync(templatePath, "utf-8");
 
@@ -21,7 +23,7 @@ export async function sendOTPByEmail(email: string, otp: string,subject:string,t
       "{{OTP_PLACEHOLDER}}",
       otp
     );
-    const info = await transporter.sendMail({
+    const info = await EmailSender.transporter.sendMail({
       from: process.env.EMAIL,
       to: email,
       subject:subject,
@@ -33,13 +35,13 @@ export async function sendOTPByEmail(email: string, otp: string,subject:string,t
     throw error;
   }
 }
-export async function sendRecipient(email: string, pdfBuffer:any) {
+static async sendRecipient(email: string, pdfBuffer:any) {
   try {
     const templatePath = "templates/assignDetails.html";
     const htmlTemplate: any = await fs.readFileSync(templatePath, "utf-8");
 
  
-    const info = await transporter.sendMail({
+    const info = await EmailSender.transporter.sendMail({
       to: email,
       subject: "Bus alloted to you",
       from: process.env.EMAIL,
@@ -51,4 +53,5 @@ export async function sendRecipient(email: string, pdfBuffer:any) {
     console.error("Error sending email:", error);
     throw error;
   }
+}
 }

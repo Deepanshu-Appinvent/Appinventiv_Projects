@@ -14,14 +14,8 @@ export async function getWeather(ctx: Context) {
   const { city } = ctx.request.body as {
     city: string;
   };
-
-  try {
     const weatherData = await fetchWeather(city);
     ctx.body = weatherData;
-  } catch (error) {
-    ctx.status = 500;
-    ctx.body = { error: "Failed to fetch weather data" };
-  }
 }
 
 

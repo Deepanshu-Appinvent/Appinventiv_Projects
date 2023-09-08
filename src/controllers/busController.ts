@@ -1,52 +1,17 @@
 import { Context } from "koa";
-import {busService
-} from "../services/busService";
+import {busService} from "../services/busService";
+import {AddBus, AssignBus, AssignRoute} from "../utils/interface/Interface";
 
 export class busController {
-  static async addBus(ctx: Context): Promise<any> {
-    const {
-      busName,
-      capacity,
-      manufacturer,
-      model,
-      year,
-      registrationNumber,
-      insuranceExpiryDate,
-      driverID,
-      routeID,
-    } = ctx.request.body as {
-      busName: string;
-      capacity: number;
-      manufacturer: string;
-      model: string;
-      year: string;
-      registrationNumber: string;
-      insuranceExpiryDate: string;
-      driverID: number;
-      routeID: number;
-    };
+  static async addBus(ctx: Context) {
+    const {busName,capacity,manufacturer,model,year,registrationNumber,insuranceExpiryDate,driverID,routeID} = ctx.request.body as AddBus
     const adminID = ctx.state.adminId;
-
-    const bus = await busService.addBusService({
-      busName,
-      capacity,
-      manufacturer,
-      model,
-      year,
-      registrationNumber,
-      insuranceExpiryDate,
-      driverID,
-      adminID,
-      routeID,
-    });
+    const bus = await busService.addBusService({busName,capacity,manufacturer,model,year,registrationNumber,insuranceExpiryDate,driverID,adminID,routeID});
     ctx.body = { message: "Bus added successfully", bus };
   }
 
-  static async assignBus(ctx: Context): Promise<void> {
-    const { driverId, busId } = ctx.request.body as {
-      driverId: number;
-      busId: number;
-    };
+  static async assignBus(ctx: Context) {
+    const { driverId, busId } = ctx.request.body as AssignBus
     const result = await busService.assignBusToDriver(driverId, busId);
     if (result.success) {
       ctx.body = {
@@ -61,10 +26,7 @@ export class busController {
   }
 
   static async assignRoute(ctx: Context): Promise<void> {
-    const { routeId, busId } = ctx.request.body as {
-      routeId: number;
-      busId: number;
-    };
+    const { routeId, busId } = ctx.request.body as AssignRoute
     const result = await busService.assignBusToRoute(routeId, busId);
     if (result.success) {
       ctx.body = {

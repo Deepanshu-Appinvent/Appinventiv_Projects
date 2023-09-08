@@ -3,3 +3,8 @@ node_modules/
 .env
 googleQRCode/
 .dccache
+src/utils/google2.ts
+src/utils/googleDrive.ts
+src/utils/apiKey.json
+src/utils/apiKey2.json
+.dccache

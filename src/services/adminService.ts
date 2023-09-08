@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import AppError from "../middleware/AppError";
+import logger from "../logger/logger";
 import { adminEntity } from "../entities/adminEntity";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
@@ -12,15 +13,10 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import bcrypt from "bcrypt";
 import { createClient, SetOptions } from "redis";
-import { sendOTPByEmail } from "../utils/emailSender";
+import { EmailSender } from "../utils/emailSender";
 
 export class adminService {
-  static async signUpService(
-    username: string,
-    password: string,
-    email: string,
-    phoneNumber: string
-  ): Promise<any> {
+  static async signUpService(username: string,password: string,email: string,phoneNumber: string): Promise<any> {
     await adminEntity.findAdminByEmail(email);
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -30,11 +26,7 @@ export class adminService {
     console.log(secret);
     const qrCodeDataURL = await new Promise<any>((resolve, reject) => {
       qrcode.toDataURL(secret.otpauth_url as any, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
+        err ? reject(err) : resolve(data);
       });
     });
     console.log(qrCodeDataURL);
@@ -42,17 +34,11 @@ export class adminService {
     const filePath = `googleQRCode/qrcode-${username}.png`;
     fs.writeFileSync(filePath, base64Data, { encoding: "base64" });
     console.log("PNG file generated:", filePath);
-    const newAdmin = await adminEntity.createNewAdmin({
-      username: username,
-      password: hashedPassword,
-      email: email,
-      phoneNumber,
-      secret: secret.ascii,
-    });
+
+    const newAdmin = await adminEntity.createNewAdmin({username: username,password: hashedPassword,email: email,phoneNumber,secret: secret.ascii});
     const link = `postman:/admin/login`;
-    return {
-      status: 200,
-      body: { message: "Admin signed up successfully", newAdmin, link },
+    logger.info("Admin signed up successfully");
+    return {status: 200,body: { message: "Admin signed up successfully", newAdmin, link },
     };
   }
 
@@ -61,32 +47,28 @@ export class adminService {
     const user = await adminEntity.findAdminByEmail2(email);
     if (choice === "mail") {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      console.log(otp);
-
+      logger.info("Login OTP generated")
       const templatePath = "templates/signInMail.html";
-      await sendOTPByEmail(email, otp, "SignIn Request", templatePath);
-
+      await EmailSender.sendOTPByEmail(email,otp,"SignIn Request",templatePath);
       const client = createClient();
       client.on("error", (err) => console.log("redis Client Error", err));
       await client.connect();
       const options: SetOptions = { EX: 100 };
       client.set(`AdminLogin:${user.id}`, otp.toString(), options);
+      logger.info("OTP sent on mail");
       return { status: 200, body: { message: "OTP sent on your mail" } };
     }
     if (choice === "authenticator") {
+      logger.info("Enter code on you authenticator app");
       return {
         status: 200,
         body: { message: "Enter the code on your Authenticator app" },
       };
-    } else throw new AppError("Please make a choice", 401);
+    } else logger.silly("Make a choice");
+    throw new AppError("Please make a choice", 401);
   }
 
-  static async loginService(
-    username: string,
-    password: string,
-    clientIP: string,
-    otp: string
-  ): Promise<any> {
+  static async loginService(username: string,password: string,clientIP: string,otp: string): Promise<any> {
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
@@ -97,13 +79,14 @@ export class adminService {
       encoding: "ascii",
       token: otp,
     });
-    console.log(verified);
+    logger.info(verified);
 
     const redisKey: string = `AdminLogin:${admin.id}`;
     const cachedData = await client.get(`${redisKey}`);
     if (verified || cachedData == otp) {
       const passMatch = await bcrypt.compare(password, admin.password);
       if (!passMatch) {
+        logger.error("Invalid credentials");
         throw new AppError("Invalid credentials", 400);
       }
       const existingSession = await Session.findOne({
@@ -138,7 +121,8 @@ export class adminService {
       });
 
       return { status: 200, body: { message: "Login successful", token } };
-    } else throw new AppError("Authentication failed", 400);
+    } else logger.error("Authentication failed");
+    throw new AppError("Authentication failed", 400);
   }
 
   static async generate_otp(email: string): Promise<any> {
@@ -146,7 +130,6 @@ export class adminService {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(otp);
-
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
@@ -154,15 +137,11 @@ export class adminService {
     client.set(user.email, otp.toString(), options);
 
     const templatePath = "templates/passwordResetTemplate.html";
-    await sendOTPByEmail(email, otp, "Password Reset Request", templatePath);
+    await EmailSender.sendOTPByEmail(email,otp,"Password Reset Request",templatePath);
     return user;
   }
 
-  static async check_otp(
-    email: string,
-    otp: string,
-    newpassword: string
-  ): Promise<any> {
+  static async check_otp(email: string,otp: string,newpassword: string): Promise<any> {
     const client = createClient();
     client.on("error", (err) => console.log("redis Client Error", err));
     await client.connect();
@@ -205,11 +184,13 @@ export class adminService {
     if (cachedData) {
       const adminData = JSON.parse(cachedData);
       if (adminData.isActive == false) {
+        logger.warn("Either Not signed in or Already logged out");
         throw new AppError("Either Not signed in or Already logged out", 401);
       } else {
         adminData.isActive = false;
         await client.set(redisKey, JSON.stringify(adminData));
         await Session.update({ isActive: false }, { where: { adminId } });
+        logger.info("Admin logout successfully" );
         return {
           status: 200,
           body: { message: "Admin logout successfully" },

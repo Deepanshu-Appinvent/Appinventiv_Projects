@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import dbConn from "../db_connection";
 
-interface AdminAttributes {
+export interface AdminAttributes {
   id: number;
   username: string;
   password: string;

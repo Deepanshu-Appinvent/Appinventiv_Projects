@@ -3,7 +3,7 @@ import BaseEntity from "./baseEntity";
 import logger from "../logger/logger";
 import AppError from "../middleware/AppError";
 
-class AdminEntity extends BaseEntity {
+export class AdminEntity extends BaseEntity {
   constructor() {
     super(Admin);
   }

@@ -8,7 +8,7 @@ export async function calculateDistance(
 ): Promise<any> {
   const options = {
     method: "POST",
-    url: "https://distanceto.p.rapidapi.com/distance/route",
+    url: process.env.DISTANCE_URL,
     params: { car: "true" },
     headers: {
       "content-type": "application/json",
@@ -34,10 +34,8 @@ export async function calculateDistance(
     const distance = parseFloat(data_res.distance).toFixed(1);
     const durationInSeconds = parseFloat(data_res.duration);
     const duration = (durationInSeconds / 3600).toFixed(1);
-    console.log(
-      `the distance between ${city1} and ${city2} is ${distance} km and duration is ${duration} hours`
-    );
     const fare = await calculateFare(distance, duration);
+    console.log(`the distance between ${city1} and ${city2} is ${distance} km, duration is ${duration} hours and cost/fare by bus is ${fare}`);
     return { distance, duration, fare };
   } catch (error) {
     console.error(error);
@@ -45,9 +43,9 @@ export async function calculateDistance(
 }
 
 export function calculateFare(distance: any, duration: any): number {
-  const BASE_FARE = 50;
-  const FARE_PER_KM = 5;
-  const FARE_PER_HOUR = 10;
+  const BASE_FARE = parseInt(process.env.BASE_FARE || '0', 10);
+  const FARE_PER_KM = parseInt(process.env.FARE_PER_KM || '0', 10);
+  const FARE_PER_HOUR = parseInt(process.env.FARE_PER_HOUR || '0', 10);
 
   const distanceFare = distance * FARE_PER_KM;
   const durationFare = duration * FARE_PER_HOUR;

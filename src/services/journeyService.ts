@@ -6,23 +6,12 @@ import { journeyEntity } from "../entities/journryEntity";
 import AppError from "../middleware/AppError";
 
 export class journeyService {
-  static async startJourneyService(
-    busID: number,
-    direction: "forward" | "backward"
-  ): Promise<any> {
-    const journey = await journeyEntity.createJourney({
-      busID,
-      direction,
-      startTime: new Date(),
-      stoppages: [],
-    });
+  static async startJourneyService(busID: number,direction: "forward" | "backward"): Promise<any> {
+    const journey = await journeyEntity.createJourney({busID,direction,startTime: new Date(),stoppages: []});
     return journey;
   }
 
-  static async endJourneyService(
-    journeyID: number,
-    direction: "forward" | "backward"
-  ): Promise<any> {
+  static async endJourneyService(journeyID: number,direction: "forward" | "backward"): Promise<any> {
     logger.info("Ending a journey...");
     const journey = await journeyEntity.findJourneyById(journeyID);
     journey.endTime = new Date();
@@ -31,19 +20,11 @@ export class journeyService {
     return journey;
   }
 
-  static async markStoppageService(
-    journeyID: number,
-    stoppageName: string
-  ): Promise<any> {
+  static async markStoppageService(journeyID: number,stoppageName: string): Promise<any> {
     const journey = await journeyEntity.findJourneyById(journeyID);
-    const stoppagesArray = Array.isArray(journey.stoppages)
-      ? journey.stoppages
-      : [];
+    const stoppagesArray = Array.isArray(journey.stoppages)? journey.stoppages: [];
     if (stoppagesArray.includes(stoppageName)) {
-      throw new AppError(
-        `Stoppage '${stoppageName}' already exists in this journey's stoppages`,
-        401
-      );
+      throw new AppError(`Stoppage '${stoppageName}' already exists in this journey's stoppages`,401);
     }
     const bus = await Bus.findByPk(journey.busID as number);
     if (!bus) {
@@ -54,12 +35,8 @@ export class journeyService {
       throw new AppError("Route not found", 404);
     }
     if (!route.stops.includes(stoppageName)) {
-      throw new AppError(
-        `Stoppage '${stoppageName}' is not part of this journey stops`,
-        401
-      );
+      throw new AppError(`Stoppage '${stoppageName}' is not part of this journey stops`,401);
     }
-
     const updatedStoppages = [...stoppagesArray, stoppageName];
     await journey.update({
       stoppages: updatedStoppages,
@@ -96,9 +73,6 @@ export class journeyService {
   static async delJourney(journeyId: number): Promise<any> {
     const journey = await journeyEntity.findJourneyById(journeyId);
     await journeyEntity.removeJourney(journey);
-    return {
-      status: 200,
-      body: { message: `Journey ${journeyId} removed successfully` },
-    };
+    return {status: 200,body: { message: `Journey ${journeyId} removed successfully` }};
   }
 }

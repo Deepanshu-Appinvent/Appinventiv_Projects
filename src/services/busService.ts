@@ -10,12 +10,9 @@ export class busService {
     return busEntity.addBusService(busData);
   }
 
-  static async assignBusToDriver(
-    driverId: number,
-    busId: number
-  ): Promise<any> {
+  static async assignBusToDriver(driverId: number,busId: number): Promise<any> {
     const driver = await Driver.findByPk(driverId);
-    const bus = await Bus.findByPk(busId);
+    const bus = await busEntity.findBusById(busId);
     if (bus?.driverID) {
       throw new AppError("Driver for this bus is already selected", 401);
     }
