@@ -4,7 +4,9 @@ node_modules/
 googleQRCode/
 .dccache
 src/utils/google2.ts
-src/utils/googleDrive.ts
 src/utils/apiKey.json
 src/utils/apiKey2.json
 .dccache
+apiKey2.json
+creds.json
+.jpeg

@@ -81,7 +81,7 @@ export interface MarkStoppage {
   stoppageName: string;
 }
 
-export interface GetJourneyDetails{
+export interface GetJourneyDetails {
   journeyId: number;
 }
 

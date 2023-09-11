@@ -10,6 +10,7 @@ import googleRoute from "./routes/googleModel"
 import busRoute from "./routes/busRoute"
 import journeyRoute from "./routes/journeyRoute"
 import routeRoute from "./routes/routeRoute"
+import gogleRoute from './utils/googleDrive'
 
 const app = new Koa();
 
@@ -43,6 +44,9 @@ app.use(routeRoute.allowedMethods());
 
 app.use(googleRoute.routes());
 app.use(googleRoute.allowedMethods());
+
+app.use(gogleRoute.routes());
+app.use(gogleRoute.allowedMethods());
 
 dbConn
   .authenticate()

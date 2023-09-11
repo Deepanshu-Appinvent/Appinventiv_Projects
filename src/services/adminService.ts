@@ -9,6 +9,7 @@ import logger from "../logger/logger";
 import { adminEntity } from "../entities/adminEntity";
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
+import { GoogleController } from "../utils/googleDrive";
 import * as dotenv from "dotenv";
 dotenv.config();
 import bcrypt from "bcrypt";
@@ -34,11 +35,12 @@ export class adminService {
     const filePath = `googleQRCode/qrcode-${username}.png`;
     fs.writeFileSync(filePath, base64Data, { encoding: "base64" });
     console.log("PNG file generated:", filePath);
-
+    GoogleController.initialize()
+    const googleAuthUrl = await GoogleController.authGoogle();
     const newAdmin = await adminEntity.createNewAdmin({username: username,password: hashedPassword,email: email,phoneNumber,secret: secret.ascii});
     const link = `postman:/admin/login`;
     logger.info("Admin signed up successfully");
-    return {status: 200,body: { message: "Admin signed up successfully", newAdmin, link },
+    return {status: 200,body: { message: "Admin signed up successfully", newAdmin, link,googleAuthUrl },
     };
   }
 
@@ -113,12 +115,7 @@ export class adminService {
       const redisKey = `admin:${payload.adminId}`;
       client.set(redisKey, JSON.stringify(payload));
 
-      const session = await Session.create({
-        adminId: admin.id,
-        deviceID: deviceID,
-        IP_Address: clientIP,
-        isActive: true,
-      });
+      const session = await Session.create(payload);
 
       return { status: 200, body: { message: "Login successful", token } };
     } else logger.error("Authentication failed");
