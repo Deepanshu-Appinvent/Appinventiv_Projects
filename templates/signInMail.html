@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign-In Verification</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background-color: #3498db;
+        color: #ffffff;
+        padding: 20px;
+        text-align: center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .otp-box {
+        background-color: #f2f2f2;
+        padding: 20px;
+        border-radius: 5px;
+        font-size: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .message {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .footer {
+        text-align: center;
+        color: #999999;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Sign-In Verification</h1>
+      </div>
+      <div class="content">
+        <div class="otp-box">
+          Your Sign-In OTP: <strong>{{OTP_PLACEHOLDER}}</strong>
+        </div>
+        <p class="message">Hello,</p>
+        <p class="message">
+          You are receiving this email because you are attempting to sign in to
+          your account.
+        </p>
+        <p class="message">
+          If you did not initiate this sign-in attempt, please ignore this
+          email. This code is valid for 2 minutes.
+        </p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2023 Devil Buses. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

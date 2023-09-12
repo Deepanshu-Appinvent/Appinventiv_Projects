@@ -1,0 +1,8 @@
+{
+  "driverAlreadySignedUp": "Driver already signed up",
+  "driverNotFound": "Driver not found",
+  "driverAlreadyLoggedIn": "Driver already logged in",
+  "invalidCredentials": "Invalid credentials",
+  "driverLogoutSuccess": "Driver logout successful",
+  "notSignedInOrLoggedOut": "Either not signed in or driver already logged out"
+}

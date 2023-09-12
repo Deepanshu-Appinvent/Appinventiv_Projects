@@ -1,0 +1,1056 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Bus Management System"
+  description: The Bus Management System is a comprehensive and user-friendly web-based application that facilitates efficient management and monitoring of bus routes, buses, and user interactions. The system is designed to be accessed by two main user roles Admin and Driver
+
+servers:
+  - url: http://localhost:3000
+
+tags:
+  - name: Admin Authentication
+    description: APIs related to admin authentication
+  - name: Admin Actions
+    description: APIs related to admin actions
+  - name: Driver Authentication
+    description: APIs related to driver Auhentication
+  - name: Driver Actions
+    description: APIs related to driver actions
+
+paths:
+  /admin/signup:
+    post:
+      summary: Sign up a new admin
+      tags:
+        - Admin Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              email:
+                type: string
+              phoneNumber:
+                type: string
+      responses:
+        200:
+          description: Admin signed up successfully
+
+  /choice:
+    post:
+      summary: Generate Login OTP or Authenticator Request
+      tags:
+        - Admin Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              choice:
+                type: string
+
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              example:
+                status: 200
+                body:
+                  message: OTP sent on your mail
+        "401":
+          description: Invalid choice or other authentication issues
+          content:
+            application/json:
+              example:
+                status: 401
+                body:
+                  error: Please make a choice
+        "404":
+          description: User not found
+          content:
+            application/json:
+              example:
+                status: 404
+                body:
+                  error: User not found
+
+  /admin/login:
+    post:
+      summary: Admin login
+      tags:
+        - Admin Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              otp:
+                type: string
+
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              example:
+                status: 200
+                body:
+                  message: Login successful
+        "400":
+          description: Bad request or authentication failure
+          content:
+            application/json:
+              example:
+                status: 400
+                body:
+                  error: Authentication failed
+        "401":
+          description: Unauthorized - Already logged in
+          content:
+            application/json:
+              example:
+                status: 401
+                body:
+                  error: Already logged in
+
+  /admin/generateOtp:
+    post:
+      summary: Generate OTP for password reset
+      tags:
+        - Admin Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+      responses:
+        200:
+          description: OTP generated successfully
+
+  /admin/checkOtp:
+    patch:
+      tags:
+        - Admin Authentication
+      summary: "Check OTP for admin"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              otp:
+                type: string
+              newpassword:
+                type: string
+      responses:
+        201:
+          description: "Success"
+
+  /logout/{adminId}:
+    get:
+      tags:
+        - Admin Authentication
+      summary: Admin Logout
+      parameters:
+        - name: adminId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful logout
+          content:
+            application/json:
+              example:
+                message: Admin logout successfully
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                error: An error occurred while fetching drivers list
+
+  /admin/addbus:
+    post:
+      tags:
+        - Admin Actions
+      summary: "Add a bus"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              busName:
+                type: string
+              capacity:
+                type: integer
+              manufacturer:
+                type: string
+              model:
+                type: string
+              year:
+                type: string
+              registrationNumber:
+                type: string
+              insuranceExpiryDate:
+                type: string
+              driverID:
+                type: integer
+              adminID:
+                type: integer
+              routeID:
+                type: integer
+      responses:
+        200:
+          description: "Success"
+
+  /admin/assignbus:
+    post:
+      tags:
+        - Admin Actions
+      summary: "Assign a bus to a driver"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              driverId:
+                type: integer
+              busId:
+                type: integer
+      responses:
+        "200":
+          description: "Bus assigned to driver successfully"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              driverName:
+                type: string
+              busName:
+                type: string
+        "404":
+          description: "Driver or bus not found"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "500":
+          description: "An error occurred while assigning bus to driver"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /distance:
+    post:
+      tags:
+        - Additional API
+      summary: Distance and duration b/w 2 cities
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              city1:
+                type: string
+              city2:
+                type: string
+      responses:
+        "200":
+          description: "Data fetched successfully"
+          schema:
+            type: object
+            properties:
+              city1:
+                type: string
+              city2:
+                type: string
+        "504":
+          description: "AxiosError: Request failed"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+  /bus/delete/{busId}:
+    delete:
+      summary: Delete a bus by ID
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: path
+          name: busId
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Bus deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating the deletion success
+        "404":
+          description: Bus not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: A message indicating that the Journey was not found
+
+  /get-weather:
+    post:
+      summary: Get weather data by city
+      tags:
+        - Additional API
+      parameters:
+        - name: city
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              city:
+                type: string
+      responses:
+        200:
+          description: Weather data fetched successfully
+          schema:
+            type: object
+            properties:
+              weather:
+                type: string
+        500:
+          description: Failed to fetch weather data
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /admin/assignroute:
+    post:
+      tags:
+        - Admin Actions
+      summary: "Assign a bus to a route"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              routeId:
+                type: integer
+              busId:
+                type: integer
+      responses:
+        "200":
+          description: "Bus assigned to route successfully"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              routeName:
+                type: string
+              busName:
+                type: string
+        "404":
+          description: "Route or bus not found"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "500":
+          description: "An error occurred while assigning bus to route"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /admin/addroute:
+    post:
+      tags:
+        - Admin Actions
+      summary: "Add a route"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: object
+            properties:
+              adminID:
+                type: integer
+              routeName:
+                type: string
+              startingStation:
+                type: string
+              endingStation:
+                type: string
+              distance:
+                type: number
+              farecalc:
+                type: number
+              estimatedDuration:
+                type: number
+              stops:
+                type: array
+                items:
+                  type: string
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              route:
+                type: object
+        500:
+          description: "Internal Server Error"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /admin/buslist:
+    get:
+      summary: Get list of buses
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of buses fetched successfully
+  /admin/routelist:
+    get:
+      summary: Get list of routes
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of routes fetched successfully
+
+  /journey/delete/{journeyID}:
+    delete:
+      summary: Delete a journey by ID
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: path
+          name: journeyID
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Journey deleted successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "404":
+          description: Journey not found
+          chema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /admin/driverlist:
+    get:
+      summary: Get list of drivers
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      responses:
+        200:
+          description: List of drivers fetched successfully
+  /admin/buses/{busId}:
+    get:
+      summary: Get details of a specific bus
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: busId
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Bus details fetched successfully
+  /admin/routes/{routeId}:
+    get:
+      summary: Get details of a specific route
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: routeId
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Route details fetched successfully
+
+  /route/delete/{routeId}:
+    delete:
+      summary: Delete a Route by ID
+      tags:
+        - Admin Actions
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: path
+          name: routeId
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Route deleted successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "404":
+          description: Route not found
+          chema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /driver/delete:
+    delete:
+      summary: Delete a driver by Name
+      tags:
+        - Admin Actions
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      # security:
+      #   - BearerAuth: []
+      parameters:
+        - in: "body"
+          name: driverName
+          required: true
+          schema:
+            type: object
+            properties:
+              driverName:
+                type: string
+      responses:
+        "200":
+          description: Driver deleted successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "404":
+          description: Driver not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+
+  /driver/adddriver:
+    post:
+      summary: Sign up a new Driver
+      tags:
+        - Driver Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              adminID:
+                type: number
+              driverName:
+                type: string
+              password:
+                type: string
+              DL:
+                type: string
+              salary:
+                type: string
+      responses:
+        200:
+          description: Driver signed up successfully
+
+  /driver/driverlogin:
+    post:
+      summary: Login to the system as a Driver
+      tags:
+        - Driver Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              driverName:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: Driver logged in successfully
+
+  /driver/logout/{driverId}:
+    get:
+      summary: Log out a driver
+      tags:
+        - Driver Authentication
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: Driver logged out successfully
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+              body:
+                type: object
+                properties:
+                  message:
+                    type: string
+        401:
+          description: Not signed in or already logged out
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+              body:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /driver/driverbus/{driverId}:
+    get:
+      summary: "Get Assigned Bus Details for Driver"
+      tags:
+        - Driver Actions
+      description: "Fetch assigned bus details for a driver"
+      parameters:
+        - name: driverId
+          in: path
+          required: true
+          type: integer
+          description: "ID of the driver"
+      responses:
+        200:
+          description: "Successful response with assigned bus details"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: "Message indicating the success"
+              bus:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: "Bus ID"
+        404:
+          description: "No assigned bus found for the driver"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: "Error message"
+        500:
+          description: "Internal server error"
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: "Error message"
+
+  /driver/startJourney:
+    post:
+      summary: Start a new journey
+      tags:
+        - Driver Actions
+      parameters:
+        - in: body
+          name: requestBody
+          schema:
+            type: object
+            properties:
+              busID:
+                type: integer
+              direction:
+                type: string
+                enum: [forward, backward]
+          required: true
+      responses:
+        "201":
+          description: Journey started successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              journey:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  busID:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: date-time
+                  endTime:
+                    type: string
+                    format: date-time
+                  direction:
+                    type: string
+                  stoppages:
+                    type: array
+                    items:
+                      type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        "500":
+          description: An error occurred while starting the journey
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /driver/endJourney:
+    post:
+      summary: Mark a journey as complete
+      tags:
+        - Driver Actions
+      parameters:
+        - in: body
+          name: requestBody
+          schema:
+            type: object
+            properties:
+              journeyID:
+                type: integer
+              direction:
+                type: string
+                enum: [forward, backward]
+          required: true
+      responses:
+        "200":
+          description: Journey marked as complete
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              journey:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  busID:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: date-time
+                  endTime:
+                    type: string
+                    format: date-time
+                  direction:
+                    type: string
+                  stoppages:
+                    type: array
+                    items:
+                      type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        "500":
+          description: An error occurred while marking the journey as complete
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /driver/markStoppage:
+    post:
+      summary: Mark a stoppage during a journey
+      tags:
+        - Driver Actions
+      parameters:
+        - in: body
+          name: requestBody
+          schema:
+            type: object
+            properties:
+              journeyID:
+                type: integer
+              stoppageName:
+                type: string
+          required: true
+      responses:
+        "200":
+          description: Stoppage marked successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              journey:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  busID:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: date-time
+                  endTime:
+                    type: string
+                    format: date-time
+                  direction:
+                    type: string
+                  stoppages:
+                    type: array
+                    items:
+                      type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        "500":
+          description: An error occurred while marking the stoppage
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+  /driver/getJourneyDetails:
+    post:
+      summary: Get detailed information about a journey
+      tags:
+        - Driver Actions
+      parameters:
+        - in: body
+          name: requestBody
+          schema:
+            type: object
+            properties:
+              journeyId:
+                type: integer
+          required: true
+      responses:
+        "200":
+          description: Journey details fetched successfully
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              journey:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  busID:
+                    type: integer
+                  startTime:
+                    type: string
+                    format: date-time
+                  endTime:
+                    type: string
+                    format: date-time
+                  direction:
+                    type: string
+                  stoppages:
+                    type: array
+                    items:
+                      type: string
+                  bus:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      busName:
+                        type: string
+                      route:
+                        type: object
+                        properties:
+                          routeName:
+                            type: string
+                          distance:
+                            type: number
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        "404":
+          description: Journey not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+        "500":
+          description: An error occurred while fetching journey details
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+security:
+  - BearerAuth: []
