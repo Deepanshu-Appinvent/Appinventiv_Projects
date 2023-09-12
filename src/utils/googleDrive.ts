@@ -4,13 +4,10 @@ import { Context } from "koa";
 import dotenv from "dotenv";
 import AppError from "../middleware/AppError";
 import fs from "fs";
-
 import Router from "koa-router";
 const router = new Router();
-
 dotenv.config();
 const app = new Koa();
-
 export class GoogleController {
   private static oauth2Client: any;
 
@@ -54,7 +51,7 @@ export class GoogleController {
         fs.writeFileSync("creds.json", JSON.stringify(tokens));
         GoogleController.saveImage();
 
-        ctx.body = "success";
+        ctx.body = "Image uploaded Successfully";
       } else {
         ctx.status = 500;
         ctx.body = "Tokens not received or invalid format";
@@ -67,14 +64,7 @@ export class GoogleController {
   }
 
   static async saveImage() {
-    if (GoogleController.oauth2Client.isTokenExpiring()) {
-      const tokenResponse =
-        await GoogleController.oauth2Client.refreshAccessToken();
-      const newAccessToken = tokenResponse.tokens.access_token;
-      GoogleController.oauth2Client.setCredentials({
-        access_token: newAccessToken,
-      });
-    }
+ 
     const drive = google.drive({
       version: "v3",
       auth: GoogleController.oauth2Client,
@@ -94,24 +84,7 @@ export class GoogleController {
       console.log("Image uploaded Successfully");
       return { status: 200, body: { message: "Success" } };
     } catch (error) {
-      throw new AppError("error");
-    }
-  }
-  
-  static async text(ctx:Context){
-    try{
-      if (GoogleController.oauth2Client.isTokenExpiring()) {
-        const tokenResponse =
-          await GoogleController.oauth2Client.refreshAccessToken();
-        const newAccessToken = tokenResponse.tokens.access_token;
-        GoogleController.oauth2Client.setCredentials({
-          access_token: newAccessToken,
-        });}
-        const sheets=google.sheets({version:'v4',auth:GoogleController.oauth2Client});
-        const res=await GoogleController.initialize();
-
-    }catch{
-      console.log("Error");
+      console.log("Error", error);
       throw new AppError("error");
     }
   }

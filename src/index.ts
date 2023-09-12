@@ -11,11 +11,11 @@ import busRoute from "./routes/busRoute"
 import journeyRoute from "./routes/journeyRoute"
 import routeRoute from "./routes/routeRoute"
 import gogleRoute from './utils/googleDrive'
+import { MessageQueue } from "./utils/consumer";
 
 const app = new Koa();
 
 app.use(bodyParser());
-
 // const swaggerDocument = YAML.load(path.join(__dirname, './swagger.yaml'));
 const swaggerDocument = YAML.load(path.join(__dirname, 'swagger.yaml'));
 app.use(koaSwagger({
@@ -48,6 +48,7 @@ app.use(googleRoute.allowedMethods());
 app.use(gogleRoute.routes());
 app.use(gogleRoute.allowedMethods());
 
+MessageQueue.startWorker();
 dbConn
   .authenticate()
   .then(() => {

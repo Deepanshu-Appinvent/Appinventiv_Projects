@@ -24,13 +24,11 @@ export class adminService {
     var secret = speakeasy.generateSecret({
       name: username,
     });
-    console.log(secret);
     const qrCodeDataURL = await new Promise<any>((resolve, reject) => {
       qrcode.toDataURL(secret.otpauth_url as any, (err, data) => {
         err ? reject(err) : resolve(data);
       });
     });
-    console.log(qrCodeDataURL);
     const base64Data = qrCodeDataURL.split(";base64,").pop();
     const filePath = `googleQRCode/qrcode-${username}.png`;
     fs.writeFileSync(filePath, base64Data, { encoding: "base64" });
@@ -45,7 +43,6 @@ export class adminService {
   }
 
   static async genloginservice(email: string, choice: string): Promise<any> {
-    console.log(choice);
     const user = await adminEntity.findAdminByEmail2(email);
     if (choice === "mail") {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -167,7 +164,6 @@ export class adminService {
       });
       return driverList;
     } catch (error) {
-      console.log(error);
       throw new AppError("An error occurred while fetching routes list", 400);
     }
   }

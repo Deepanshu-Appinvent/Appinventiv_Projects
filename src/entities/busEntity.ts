@@ -16,7 +16,7 @@ class BusEntity extends BaseEntity {
   }
 
   async findBusById(busId: number): Promise<any | null> {
-    const bus = await this.findOneWhere({ busId });
+    const bus = await this.findByPk( busId );
     if (!bus) {
       logger.error("Bus not found");
       throw new AppError("Bus not found", 404);

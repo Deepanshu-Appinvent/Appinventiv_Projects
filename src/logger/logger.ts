@@ -14,7 +14,6 @@ const logger = winston.createLogger({
     new DailyRotateFile({
       filename: "loggingFiles/%DATE%.log", 
       datePattern: "YYYY-MM-DD", 
-      // zippedArchive: true,
     }),
   ],
 });

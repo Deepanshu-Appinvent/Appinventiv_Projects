@@ -1,8 +1,11 @@
 import { Bus } from "../database/models/bus.model";
 import { Route } from "../database/models/routeModel";
 import AppError from "../middleware/AppError";
+import DriverEntity from "../entities/driverEntity";
+import routeEntity from "../entities/routeEntity";
 import busEntity from "../entities/busEntity";
-import amqp from "amqplib";
+import logger from "../logger/logger";
+import {MessageQueue} from "../utils/consumer";
 import { Driver } from "../database/models/driver.Model";
 
 export class busService {
@@ -14,23 +17,17 @@ export class busService {
     const driver = await Driver.findByPk(driverId);
     const bus = await busEntity.findBusById(busId);
     if (bus?.driverID) {
+      logger.warn("Driver for this bus is already selected");
       throw new AppError("Driver for this bus is already selected", 401);
     }
     if (!driver || !bus) {
       return false;
     }
-
     bus.driverID = driverId;
     await bus.save();
     const driverName = driver.driverName;
     const busName = bus.busName;
-
-    const connection = await amqp.connect("amqp://localhost");
-    const channel = await connection.createChannel();
-
-    const queueName = "busAssign_queue";
-    await channel.assertQueue(queueName, { durable: true });
-
+    const queueName = process.env.QUEUE as string;
     const assignData = {
       driverId,
       driverName,
@@ -41,14 +38,8 @@ export class busService {
       busModel: bus.model,
       plate: bus.registrationNumber,
     };
-
-    channel.sendToQueue(queueName, Buffer.from(JSON.stringify(assignData)), {
-      persistent: true,
-    });
-
-    await channel.close();
-    await connection.close();
-
+    await MessageQueue.sendToQueue(queueName,assignData)
+    logger.info("Bus assigned to driver successfully");
     return {
       success: true,
       message: "Bus assigned to driver successfully",
@@ -59,8 +50,9 @@ export class busService {
 
   static async assignBusToRoute(routeId: number, busId: number): Promise<any> {
     const route = await Route.findByPk(routeId);
-    const bus = await Bus.findByPk(busId);
+    const bus = await busEntity.findBusById(busId);
     if (bus?.routeID) {
+      logger.warn("Route for this bus is already selected")
       throw new AppError("Route for this bus is already selected", 401);
     }
     if (!route || !bus) {
@@ -70,7 +62,7 @@ export class busService {
     await bus.save();
     const routeName = route.routeName;
     const busName = bus.busName;
-
+    logger.info("Bus assigned to route successfully");
     return {
       success: true,
       message: "Bus assigned to route successfully",
@@ -94,6 +86,7 @@ export class busService {
       },
     });
     if (!bus) {
+      logger.error("Bus not found")
       throw new AppError("Bus not found", 404);
     }
     return bus;
@@ -102,9 +95,11 @@ export class busService {
   static async getAssignedBusDetails(driverId: number): Promise<any> {
     return busEntity.getAssignedBusDetails(driverId);
   }
+  
   static async delBus(busId: number): Promise<any> {
     const bus = await busEntity.findBusById(busId);
     await busEntity.removeBus(bus);
+    logger.info(`Bus ${bus.busName} removed successfully`);
     return {
       status: 200,
       body: { message: `Bus ${bus.busName} removed successfully` },
